@@ -18,7 +18,8 @@ class UdpServer
 
   def listen
     sock = UDPSocket.new
-    sock.bind("127.0.0.1", 1234)
+    udp_server = config['udp_server']
+    sock.bind(udp_server['address'], udp_server['port'])
 
     while true
       data, addr = sock.recvfrom(2048)
@@ -63,10 +64,12 @@ class UdpServer
   end
 
   def notify(status)
+    tcp_client = config["tcp_client"]
+
     begin
       timeout(5) do
-        client = TCPSocket.new(config["host"], config["port"])
-        light  = status ? config["pass"] : config["fail"]
+        client = TCPSocket.new(tcp_client["host"], tcp_client["port"])
+        light  = status ? tcp_client["pass"] : tcp_client["fail"]
         client.print "GET #{light} HTTP/1.0\n\n"
         answer = client.gets(nil)
         puts answer
