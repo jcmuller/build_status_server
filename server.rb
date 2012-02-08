@@ -6,6 +6,7 @@ require "redis"
 require "socket"
 require "timeout"
 require "yaml"
+require "ruby-debug"
 
 class UdpServer
   attr_reader :redis, :config, :key_name
