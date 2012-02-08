@@ -24,6 +24,7 @@ class UdpServer
 
     while true
       data, addr = sock.recvfrom(2048)
+      #debugger
       if process_job(data)
         status = process_all_statuses
         notify(status)
@@ -38,6 +39,7 @@ class UdpServer
 
     if job_status.class != Hash or
       job_status["build"].class != Hash
+      STDERR.puts "Pinged with an invalid payload"
       return false
     end
 
@@ -46,12 +48,17 @@ class UdpServer
     status     = job_status["build"]["status"]
 
     if phase == "FINISHED"
+      puts "Got #{status} for #{build_name} on #{Time.now} [#{job_status.inspect}]"
       case status
       when "SUCCESS", "FAILURE"
         redis.hset(key_name, build_name, status)
         return true
       end
+    else
+      puts "Started for #{build_name} on #{Time.now} [#{job_status.inspect}]"
     end
+
+    return false
   end
 
   def process_all_statuses
@@ -67,17 +74,24 @@ class UdpServer
   def notify(status)
     tcp_client = config["tcp_client"]
 
-    begin
-      timeout(5) do
-        client = TCPSocket.new(tcp_client["host"], tcp_client["port"])
-        light  = status ? tcp_client["pass"] : tcp_client["fail"]
-        client.print "GET #{light} HTTP/1.0\n\n"
-        answer = client.gets(nil)
-        puts answer
-        client.close
+    attempts = 0
+    success = 0
+
+    while success == 0 && attempts < 3
+      begin
+        timeout(5) do
+          client = TCPSocket.new(tcp_client["host"], tcp_client["port"])
+          light  = status ? tcp_client["pass"] : tcp_client["fail"]
+          client.print "GET #{light} HTTP/1.0\n\n"
+          answer = client.gets(nil)
+          puts answer
+          client.close
+          success = 1
+        end
+      rescue Timeout::Error
+        puts "Error: #{$!}"
+        attempts += 1
       end
-    rescue
-      puts "Error: #{$!}"
     end
   end
 end
