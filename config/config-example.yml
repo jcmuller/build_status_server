@@ -6,4 +6,4 @@ tcp_client:
   port: 4567
   pass: "/green"
   fail: "/red"
-
+store: "out/build_result.yml"

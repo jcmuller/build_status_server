@@ -3,8 +3,8 @@
 require "rubygems"
 require "bundler/setup"
 
-require "json"
-require "ruby-debug"
+Bundler.require(:default)
+
 require "socket"
 require "timeout"
 require "yaml"

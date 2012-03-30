@@ -6,22 +6,22 @@ class Server
 
   def initialize
     @config     = YAML.load_file(File.expand_path(".", "config/config.yml"))
-    @store_file = File.expand_path(".", "out/build_result.yml")
+    @store_file = File.expand_path(".", config["store"])
   end
 
   def load_store
-    @store      = begin
-                    YAML.load_file(store_file)
-                  rescue
-                    {}
-                  end
+    @store = begin
+               YAML.load_file(store_file)
+             rescue
+               {}
+             end
+    @store = {} unless store.class == Hash
   end
-
 
   def listen
     sock = UDPSocket.new
-    udp_server = config['udp_server']
-    sock.bind(udp_server['address'], udp_server['port'])
+    udp_server = config["udp_server"]
+    sock.bind(udp_server["address"], udp_server["port"])
 
     while true
       data, addr = sock.recvfrom(2048)
@@ -68,7 +68,7 @@ class Server
     pass = true
 
     @store.values.each do |val|
-      pass = pass && (val == "pass" || val == "SUCCESS")
+      pass &&= (val == "pass" || val == "SUCCESS")
     end
 
     pass
@@ -117,4 +117,3 @@ __END__
 #     "url":"job/test/20/"
 #   }
 # }
-
