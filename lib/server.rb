@@ -94,7 +94,7 @@ class Server
       rescue Timeout::Error
         STDERR.puts "Error: #{$!}"
         attempts += 1
-      rescue Errno::ECONNREFUSED
+      rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
         STDERR.puts "Error: #{$!}"
         STDERR.puts "Will wait for 2 seconds and try again..."
         sleep 2
