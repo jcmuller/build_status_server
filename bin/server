@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+
+require "rubygems"
+require "bundler/setup"
+
+require "json"
+require "ruby-debug"
+require "socket"
+require "timeout"
+require "yaml"
+
+require File.expand_path(".", "lib/server")
+
+Server.new.listen

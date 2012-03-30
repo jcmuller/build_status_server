@@ -9,7 +9,6 @@ GEM
     rack-protection (1.2.0)
       rack
     rbx-require-relative (0.0.5)
-    redis (2.2.2)
     ruby-debug (0.10.4)
       columnize (>= 0.1)
       ruby-debug-base (~> 0.10.4.0)
@@ -26,6 +25,5 @@ PLATFORMS
 
 DEPENDENCIES
   json
-  redis
   ruby-debug
   sinatra

@@ -1,21 +1,22 @@
 #/usr/bin/env ruby
 
-require "rubygems"
-require "json"
-require "redis"
-require "socket"
-require "timeout"
-require "yaml"
-require "ruby-debug"
-
-class UdpServer
-  attr_reader :redis, :config, :key_name
+class Server
+  attr_reader   :config, :store_file
+  attr_accessor :store
 
   def initialize
-    @redis    = Redis.new
-    @config   = YAML.load_file(File.expand_path(".", "config.yml"))
-    @key_name = "build_result"
+    @config     = YAML.load_file(File.expand_path(".", "config/config.yml"))
+    @store_file = File.expand_path(".", "out/build_result.yml")
   end
+
+  def load_store
+    @store      = begin
+                    YAML.load_file(store_file)
+                  rescue
+                    {}
+                  end
+  end
+
 
   def listen
     sock = UDPSocket.new
@@ -48,14 +49,16 @@ class UdpServer
     status     = job_status["build"]["status"]
 
     if phase == "FINISHED"
-      puts "Got #{status} for #{build_name} on #{Time.now} [#{job_status.inspect}]"
+      STDOUT.puts "Got #{status} for #{build_name} on #{Time.now} [#{job_status.inspect}]"
       case status
       when "SUCCESS", "FAILURE"
-        redis.hset(key_name, build_name, status)
+        load_store
+        store[build_name] = status
+        File.open(store_file, "w") { |file| YAML.dump(store, file) }
         return true
       end
     else
-      puts "Started for #{build_name} on #{Time.now} [#{job_status.inspect}]"
+      STDOUT.puts "Started for #{build_name} on #{Time.now} [#{job_status.inspect}]"
     end
 
     return false
@@ -63,8 +66,8 @@ class UdpServer
 
   def process_all_statuses
     pass = true
-    redis.hkeys(key_name).each do |build|
-      val  = redis.hget(key_name, build)
+
+    @store.values.each do |val|
       pass = pass && (val == "pass" || val == "SUCCESS")
     end
 
@@ -84,7 +87,7 @@ class UdpServer
           light  = status ? tcp_client["pass"] : tcp_client["fail"]
           client.print "GET #{light} HTTP/1.0\n\n"
           answer = client.gets(nil)
-          puts answer
+          STDOUT.puts answer
           client.close
           success = 1
         end
@@ -95,8 +98,6 @@ class UdpServer
     end
   end
 end
-
-UdpServer.new.listen
 
 __END__
 
