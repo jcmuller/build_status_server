@@ -92,7 +92,12 @@ class Server
           success = 1
         end
       rescue Timeout::Error
-        puts "Error: #{$!}"
+        STDERR.puts "Error: #{$!}"
+        attempts += 1
+      rescue Errno::ECONNREFUSED
+        STDERR.puts "Error: #{$!}"
+        STDERR.puts "Will wait for 2 seconds and try again..."
+        sleep 2
         attempts += 1
       end
     end
