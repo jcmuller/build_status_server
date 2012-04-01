@@ -1,5 +1,7 @@
 #/usr/bin/env ruby
 
+require File.expand_path(".", "lib/requirements")
+
 class Server
   attr_reader   :config, :store_file
   attr_accessor :store
