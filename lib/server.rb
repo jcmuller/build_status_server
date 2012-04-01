@@ -78,28 +78,25 @@ class Server
     tcp_client = config["tcp_client"]
 
     attempts = 0
-    success = 0
 
-    while success == 0 && attempts < 3
-      begin
-        timeout(5) do
-          client = TCPSocket.new(tcp_client["host"], tcp_client["port"])
-          light  = status ? tcp_client["pass"] : tcp_client["fail"]
-          client.print "GET #{light} HTTP/1.0\n\n"
-          answer = client.gets(nil)
-          STDOUT.puts answer
-          client.close
-          success = 1
-        end
-      rescue Timeout::Error
-        STDERR.puts "Error: #{$!}"
+    begin
+      timeout(5) do
         attempts += 1
-      rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
-        STDERR.puts "Error: #{$!}"
-        STDERR.puts "Will wait for 2 seconds and try again..."
-        sleep 2
-        attempts += 1
+        client = TCPSocket.new(tcp_client["host"], tcp_client["port"])
+        light  = status ? tcp_client["pass"] : tcp_client["fail"]
+        client.print "GET #{light} HTTP/1.0\n\n"
+        answer = client.gets(nil)
+        STDOUT.puts answer
+        client.close
       end
+    rescue Timeout::Error
+      STDERR.puts "Error: #{$!}"
+      retry unless attempts > 2
+    rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
+      STDERR.puts "Error: #{$!}"
+      STDERR.puts "Will wait for 2 seconds and try again..."
+      sleep 2
+      retry unless attempts > 2
     end
   end
 end
