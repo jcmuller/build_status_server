@@ -1,6 +1,5 @@
 source :rubygems
 
-gem "sinatra"
 gem "json"
 
 group :test do
@@ -9,4 +8,5 @@ end
 
 group :development do
   gem "ruby-debug"
+  gem "sinatra"
 end
