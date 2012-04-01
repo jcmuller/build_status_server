@@ -2,12 +2,6 @@ require 'lib/server'
 
 describe Server do
 
-  describe "#initialize" do
-    it "initializes"
-  end
-
-  describe "#listen"
-
   describe "#load_store" do
     let!(:server) { Server.new }
 
