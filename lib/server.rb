@@ -80,12 +80,12 @@ class Server
     tcp_client = config["tcp_client"]
 
     attempts = 0
+    light  = status ? tcp_client["pass"] : tcp_client["fail"]
 
     begin
       timeout(5) do
         attempts += 1
         client = TCPSocket.new(tcp_client["host"], tcp_client["port"])
-        light  = status ? tcp_client["pass"] : tcp_client["fail"]
         client.print "GET #{light} HTTP/1.0\n\n"
         answer = client.gets(nil)
         STDOUT.puts answer
