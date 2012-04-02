@@ -92,7 +92,7 @@ class Server
         client.close
       end
     rescue StandardError => ex
-      STDERR.puts "Error: #{ex}"
+      STDERR.puts "Error: #{ex} while trying to send #{light}"
 
       case ex.class.name
       when "Timeout::Error"
