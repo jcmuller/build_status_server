@@ -91,13 +91,19 @@ class Server
         STDOUT.puts answer
         client.close
       end
-    rescue Timeout::Error
-      STDERR.puts "Error: #{$!}"
-      retry unless attempts > 2
-    rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
-      STDERR.puts "Error: #{$!}"
-      STDERR.puts "Will wait for 2 seconds and try again..."
-      sleep 2
+    rescue StandardError => ex
+      STDERR.puts "Error: #{ex}"
+
+      case ex.class.name
+      when "Timeout::Error"
+        # Just handle the timeouts
+      when "Errno::ECONNREFUSED", "Errno::EHOSTUNREACH"
+        STDERR.puts "Will wait for 2 seconds and try again..."
+        sleep 2
+      else
+        throw ex
+      end
+
       retry unless attempts > 2
     end
   end
