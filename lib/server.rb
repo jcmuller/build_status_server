@@ -1,5 +1,3 @@
-#/usr/bin/env ruby
-
 require File.expand_path(".", "lib/requirements")
 
 class Server
