@@ -36,20 +36,21 @@ class Server
   end
 
   def process_job(data = "{}")
-    job_status = JSON.parse(data)
+    job = JSON.parse(data)
 
-    if job_status.class != Hash or
-      job_status["build"].class != Hash
+    build_name = job["name"]
+
+    if job.class != Hash or
+      job["build"].class != Hash
       STDERR.puts "Pinged with an invalid payload"
       return false
     end
 
-    build_name = job_status["name"]
-    phase      = job_status["build"]["phase"]
-    status     = job_status["build"]["status"]
+    phase      = job["build"]["phase"]
+    status     = job["build"]["status"]
 
     if phase == "FINISHED"
-      STDOUT.puts "Got #{status} for #{build_name} on #{Time.now} [#{job_status.inspect}]"
+      STDOUT.puts "Got #{status} for #{build_name} on #{Time.now} [#{job.inspect}]"
       case status
       when "SUCCESS", "FAILURE"
         load_store
@@ -58,7 +59,7 @@ class Server
         return true
       end
     else
-      STDOUT.puts "Started for #{build_name} on #{Time.now} [#{job_status.inspect}]"
+      STDOUT.puts "Started for #{build_name} on #{Time.now} [#{job.inspect}]"
     end
 
     return false
