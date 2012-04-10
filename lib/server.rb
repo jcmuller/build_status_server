@@ -77,13 +77,9 @@ class Server
   end
 
   def should_process_build(build_name)
-    if !!mask &&
-      ((mask_policy == "include" && build_name !~ mask) ||
-       (mask_policy != "include" && build_name =~ mask))
-      return false
-    end
-
-    true
+    # If mask exists, then ...
+    ! (!!mask && ((mask_policy == "include" && build_name !~ mask) ||
+                  (mask_policy != "include" && build_name =~ mask)))
   end
 
   def process_all_statuses
