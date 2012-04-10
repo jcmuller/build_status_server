@@ -5,8 +5,8 @@ class Server
   attr_accessor :store
 
   def initialize
-    @config     = YAML.load_file(File.expand_path(".", "config/config.yml"))
     @store_file = File.expand_path(".", config["store"])
+    @config      = YAML.load_file(config_file)
   end
 
   def load_store
@@ -62,6 +62,13 @@ class Server
     end
 
     return false
+  end
+
+  # Ensure config file exists. If not, copy example into it
+  def config_file
+    File.expand_path(".", "config/config.yml").tap do |file|
+      FileUtils.copy(File.expand_path(".", "config/config-example.yml"), file) unless File.exist?(file)
+    end
   end
 
   def process_all_statuses
