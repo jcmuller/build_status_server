@@ -5,8 +5,8 @@ class Server
   attr_accessor :store
 
   def initialize
-    @store_file = File.expand_path(".", config["store"])
     @config      = YAML.load_file(config_file)
+    @store_file  = File.expand_path(".", config["store"]["filename"])
   end
 
   def load_store
