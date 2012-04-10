@@ -1,12 +1,14 @@
 require File.expand_path(".", "lib/requirements")
 
 class Server
-  attr_reader   :config, :store_file
-  attr_accessor :store
+  attr_reader   :config, :store_file, :mask_policy
+  attr_accessor :store, :mask
 
   def initialize
     @config      = YAML.load_file(config_file)
     @store_file  = File.expand_path(".", config["store"]["filename"])
+    @mask        = Regexp.new(config["mask"]["regex"])
+    @mask_policy = config["mask"]["policy"] || "exclude"
   end
 
   def load_store
@@ -25,7 +27,7 @@ class Server
 
     while true
       data, addr = sock.recvfrom(2048)
-      #debugger
+      #require "ruby-debug"; debugger
       if process_job(data)
         status = process_all_statuses
         notify(status)
@@ -39,6 +41,8 @@ class Server
     job = JSON.parse(data)
 
     build_name = job["name"]
+
+    return false unless should_process_build(build_name)
 
     if job.class != Hash or
       job["build"].class != Hash
@@ -70,6 +74,16 @@ class Server
     File.expand_path(".", "config/config.yml").tap do |file|
       FileUtils.copy(File.expand_path(".", "config/config-example.yml"), file) unless File.exist?(file)
     end
+  end
+
+  def should_process_build(build_name)
+    if !!mask &&
+      ((mask_policy == "include" && build_name !~ mask) ||
+       (mask_policy != "include" && build_name =~ mask))
+      return false
+    end
+
+    true
   end
 
   def process_all_statuses

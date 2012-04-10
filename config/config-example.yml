@@ -8,3 +8,6 @@ tcp_client:
   fail: "/red"
 store:
   filename: "out/build_result.yml"
+mask:
+  regex: ".*master.*"
+  policy: "include"
