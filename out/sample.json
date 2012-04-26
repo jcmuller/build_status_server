@@ -1,5 +1,5 @@
 {
-  "name":"test",
+  "name":"test-master",
   "url":"job/test/",
   "build":{
     "full_url":"http://cronus.local:3001/job/test/20/",
