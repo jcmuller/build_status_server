@@ -124,6 +124,7 @@ end
 
 __END__
 
+# Example payload:
 # {
 #   "name":"test",
 #   "url":"job/test/",
@@ -135,3 +136,10 @@ __END__
 #     "url":"job/test/20/"
 #   }
 # }
+#
+# We're getting this error once in a while:
+# /usr/local/lib/ruby/1.8/timeout.rb:64:in `notify': execution expired (Timeout::Error)
+#         from /home/jcmuller/build_notifier/lib/server.rb:102:in `notify'
+#         from /home/jcmuller/build_notifier/lib/server.rb:33:in `listen'
+#         from bin/server:5
+#
