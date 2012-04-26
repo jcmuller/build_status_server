@@ -110,19 +110,13 @@ class Server
         STDOUT.puts answer
         client.close
       end
-    rescue StandardError => ex
+    rescue Timeout::Error => ex
       STDERR.puts "Error: #{ex} while trying to send #{light}"
-
-      case ex.class.name
-      when "Timeout::Error"
-        # Just handle the timeouts
-      when "Errno::ECONNREFUSED", "Errno::EHOSTUNREACH"
-        STDERR.puts "Will wait for 2 seconds and try again..."
-        sleep 2
-      else
-        throw ex
-      end
-
+      retry unless attempts > 2
+    rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH => ex
+      STDERR.puts "Error: #{ex} while trying to send #{light}"
+      STDERR.puts "Will wait for 2 seconds and try again..."
+      sleep 2
       retry unless attempts > 2
     end
   end
