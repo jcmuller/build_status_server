@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
 
-require File.expand_path(".", "lib/build_status_server")
+require File.expand_path(".", "lib/build_status_server/server")
 
-BuildStatusServer.new.listen
+BuildStatusServer::Server.new.listen

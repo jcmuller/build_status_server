@@ -1,7 +1,7 @@
-require 'lib/server'
+require 'lib/build_status_server/server'
 
-describe BuildStatusServer do
-  let!(:server) { BuildStatusServer.new }
+describe BuildStatusServer::Server do
+  let!(:server) { BuildStatusServer::Server.new }
 
   describe "#load_store" do
 
