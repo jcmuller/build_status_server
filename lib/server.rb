@@ -42,7 +42,10 @@ class Server
 
     build_name = job["name"]
 
-    return false unless should_process_build(build_name)
+    unless should_process_build(build_name)
+      STDERR.puts "Ignoring #{build_name} (#{mask}--#{mask_policy})"
+      return false
+    end
 
     if job.class != Hash or
       job["build"].class != Hash
