@@ -1,13 +1,14 @@
-udp_server:
-  address: '127.0.0.1'
-  port: 1234
-tcp_client:
-  host: '127.0.0.1'
-  port: 4567
-  pass: "/green"
-  fail: "/red"
-store:
-  filename: "out/build_result.yml"
-mask:
-  regex: ".*master.*"
-  policy: "include"
+    udp_server:
+      address: '127.0.0.1'
+      port: 1234
+    tcp_client:
+      host: '127.0.0.1'
+      port: 4567
+      pass: "/green"
+      fail: "/red"
+    store:
+      filename: "/tmp/build_result.yml"
+    mask:
+      regex: ".*master.*"
+      policy: "include"
+    verbose: true
