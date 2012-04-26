@@ -1,3 +1,10 @@
+PATH
+  remote: .
+  specs:
+    build_status_server (0.1)
+      json
+      sinatra
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -33,6 +40,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  build_status_server!
   json
   rspec
   ruby-debug
