@@ -1,6 +1,6 @@
 require File.expand_path(".", "lib/requirements")
 
-class Server
+class BuildStatusServer
   attr_reader   :config, :store_file, :mask_policy
   attr_accessor :store, :mask
 

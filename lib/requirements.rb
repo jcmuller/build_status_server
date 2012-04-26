@@ -7,4 +7,4 @@ require "socket"
 require "timeout"
 require "yaml"
 
-require File.expand_path(".", "lib/server")
+require File.expand_path(".", "lib/build_status_server")
