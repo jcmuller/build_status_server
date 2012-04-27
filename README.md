@@ -14,6 +14,16 @@ API.
 To run, you need to create a `config.yml` file. The first time you run the
 application without any arguments, you will get a sample.
 
+# Installation
+
+    $ gem install build_status_server
+
+# Execution
+
+See the options you can pass in by:
+    
+    $ build_status_server -h
+
 # Configuration file
 ## UDP Server
 This section defines what interface and port should the UDP server listen at.
