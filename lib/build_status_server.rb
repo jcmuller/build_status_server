@@ -1,6 +1,5 @@
 require "rubygems"
 require "json"
-require "sinatra"
 require "socket"
 require "timeout"
 require "yaml"
