@@ -4,11 +4,12 @@ module BuildStatusServer
   #   like setting up udp server
   #   and such
   class Server
-    attr_reader   :config, :store_file, :mask_policy
+    attr_reader   :config, :store_file, :mask_policy, :verbose
     attr_accessor :store, :mask
 
-    def initialize
-      @config      = YAML.load_file(config_file)
+    def initialize(options = {})
+      load_config_file(options[:config])
+      @verbose     = options[:verbose] || config["verbose"]
       @store_file  = File.expand_path(".", config["store"]["filename"])
       @mask        = Regexp.new(config["mask"]["regex"])
       @mask_policy = config["mask"]["policy"] || "exclude"
@@ -46,7 +47,7 @@ module BuildStatusServer
       build_name = job["name"]
 
       unless should_process_build(build_name)
-        STDERR.puts "Ignoring #{build_name} (#{mask}--#{mask_policy})"
+        STDOUT.puts "Ignoring #{build_name} (#{mask}--#{mask_policy})" if verbose
         return false
       end
 
@@ -60,7 +61,7 @@ module BuildStatusServer
       status     = job["build"]["status"]
 
       if phase == "FINISHED"
-        STDOUT.puts "Got #{status} for #{build_name} on #{Time.now} [#{job.inspect}]"
+        STDOUT.puts "Got #{status} for #{build_name} on #{Time.now} [#{job.inspect}]" if verbose
         case status
         when "SUCCESS", "FAILURE"
           load_store
@@ -69,7 +70,7 @@ module BuildStatusServer
           return true
         end
       else
-        STDOUT.puts "Started for #{build_name} on #{Time.now} [#{job.inspect}]"
+        STDOUT.puts "Started for #{build_name} on #{Time.now} [#{job.inspect}]" if verbose
       end
 
       return false
@@ -110,7 +111,7 @@ module BuildStatusServer
           client = TCPSocket.new(tcp_client["host"], tcp_client["port"])
           client.print "GET #{light} HTTP/1.0\n\n"
           answer = client.gets(nil)
-          STDOUT.puts answer
+          STDOUT.puts answer if verbose
           client.close
         end
       rescue Timeout::Error => ex
