@@ -9,14 +9,14 @@ Gem::Specification.new do |s|
   s.author = "Juan C. Muller"
   s.email = "jcmuller@gmail.com"
   s.homepage = "http://github.com/jcmuller/build_status_server"
+  s.license = "GPL"
   s.summary = "A build notifier server for Jenkins CI that controls an XFD over HTTP"
   s.description = "A build notifier server for Jenkins CI that controls an XFD over HTTP"
 
-  s.files = Dir["{bin/*,lib/**/*,spec/**/*}"] + %w(config/config-example.yml LICENSE README.md Gemfile Gemfile.lock build_status_server.gemspec)
-
-  s.bindir = "bin"
-  s.executables = %w(build_status_server build_status_server_traffic_light_mock)
+  s.files = Dir["{lib/**/*,spec/**/*}"] + %w(bin/build_status_server config/config-example.yml LICENSE README.md Gemfile Gemfile.lock build_status_server.gemspec)
   s.require_path = "lib"
+  s.bindir = "bin"
+  s.executables = %w(build_status_server)
 
   s.homepage = "http://github.com/jcmuller/build_status_server"
   s.test_files = Dir["spec/**/*_spec.rb"]

@@ -33,6 +33,11 @@ Where the persistent state will be stored.
 You can decide to either include or ignore certain builds whose names match a
 given [Regular Expression](http://en.wikipedia.org/wiki/Regular_expression).
 
+# Development
+
+`bin/build_status_server_traffic_light_mock` is provided for development
+purposes only.
+
 # Finished product
 ![my image](http://i.imgur.com/aK5rs.jpg)
 

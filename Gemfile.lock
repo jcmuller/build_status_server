@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    build_status_server (0.1)
+    build_status_server (0.2)
       json
       sinatra
 
