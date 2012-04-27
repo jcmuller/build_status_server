@@ -23,7 +23,17 @@ module BuildStatusServer
     def listen
       sock = UDPSocket.new
       udp_server = config["udp_server"]
-      sock.bind(udp_server["address"], udp_server["port"])
+
+      begin
+        sock.bind(udp_server["address"], udp_server["port"])
+      rescue Errno::EADDRINUSE
+        STDERR.puts <<-EOT
+There appears that another instance is running, or another process
+is listening at the same port (#{udp_server["address"]}:#{udp_server["port"]}
+
+        EOT
+        exit
+      end
 
       puts "Listening on UDP #{udp_server["address"]}:#{udp_server["port"]}" if verbose
 
