@@ -1,4 +1,8 @@
 module BuildStatusServer
+  # TODO
+  # Add initialization output if verbose
+  #   like setting up udp server
+  #   and such
   class Server
     attr_reader   :config, :store_file, :mask_policy
     attr_accessor :store, :mask
