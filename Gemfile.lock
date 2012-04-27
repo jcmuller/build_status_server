@@ -1,9 +1,8 @@
 PATH
   remote: .
   specs:
-    build_status_server (0.2)
+    build_status_server (0.3)
       json
-      sinatra
 
 GEM
   remote: http://rubygems.org/

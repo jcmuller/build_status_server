@@ -22,8 +22,8 @@ Gem::Specification.new do |s|
   s.test_files = Dir["spec/**/*_spec.rb"]
 
   s.add_development_dependency("ruby-debug")
+  s.add_development_dependency("sinatra")
 
   s.add_dependency("json")
-  s.add_dependency("sinatra")
 end
 
