@@ -10,7 +10,14 @@ Gem::Specification.new do |s|
   s.email = "jcmuller@gmail.com"
   s.homepage = "http://github.com/jcmuller/build_status_server"
   s.license = "GPL"
-  s.summary = "A build notifier server for Jenkins CI that controls an XFD over HTTP"
+  s.summary = <<-EOS
+This utility is part of an XFD (eXtreeme Feedback Device) solution designed and
+built for my employer ChallengePost (http://challengepost.com). It works in
+conjunction with our Jenkins Continuous Integration server (and its
+Notification Plugin)) and an Arduino powered Traffic Light controller
+(https://github.com/jcmuller/TrafficLightController) with a pseudo-RESTful API.
+
+  EOS
   s.description = "A build notifier server for Jenkins CI that controls an XFD over HTTP"
 
   s.files = Dir["{lib/**/*,spec/**/*}"] + %w(bin/build_status_server config/config-example.yml LICENSE README.md Gemfile Gemfile.lock build_status_server.gemspec)
