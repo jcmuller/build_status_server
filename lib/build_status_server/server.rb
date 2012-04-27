@@ -77,10 +77,51 @@ module BuildStatusServer
     end
 
     # Ensure config file exists. If not, copy example into it
-    def config_file
-      File.expand_path(".", "config/config.yml").tap do |file|
-        FileUtils.copy(File.expand_path(".", "config/config-example.yml"), file) unless File.exist?(file)
+    def load_config_file(config_file)
+      curated_file = nil
+
+      if config_file
+        f = File.expand_path(config_file)
+        if File.exists?(f)
+          curated_file = f
+        else
+          puts "Supplied config file (#{config_file}) doesn't seem to exist" if verbose
+          exit
+        end
+      else
+        locations_to_try = %w(
+          ~/.config/build_status_server/config.yml
+          config/config.yml
+          /etc/build_status_server/config.yml
+          /usr/local/etc/build_status_server/config.yml
+        )
+
+        locations_to_try.each do |possible_conf_file|
+          f = File.expand_path(possible_conf_file)
+          if File.exists?(f)
+            puts "Using #{possible_conf_file}!" if verbose if verbose
+            curated_file = f
+            break
+          end
+        end
+
+        puts <<-EOT
+  Looks like there isn't an available configuration file for this program. You
+  can create one in any of the following locations:
+
+   #{locations_to_try.map{|l| File.expand_path(l)}.join("\n   ")}
+
+   Here is a sample of the contents for that file:
+
+#{File.open("#{File.dirname(File.expand_path(__FILE__))}/../../config/config-example.yml").read}
+
+        EOT
+
+        exit
       end
+
+      puts "Using #{curated_file}!" if verbose
+      @config = YAML.load_file(curated_file)
     end
 
     def should_process_build(build_name)
