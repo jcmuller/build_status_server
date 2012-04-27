@@ -11,8 +11,8 @@ with a
 pseudo-[REST](http://en.wikipedia.org/wiki/Representational_state_transfer)ful
 API.
 
-To run, you need to copy `config/config-example.yml` into `config/config.yml`
-and mofify accordingly.
+To run, you need to create a `config.yml` file. The first time you run the
+application without any arguments, you will get a sample.
 
 # Configuration file
 ## UDP Server
@@ -32,6 +32,9 @@ Where the persistent state will be stored.
 ## Mask (optional)
 You can decide to either include or ignore certain builds whose names match a
 given [Regular Expression](http://en.wikipedia.org/wiki/Regular_expression).
+
+## Verbose
+Whether to display informative output messages.
 
 # Development
 
