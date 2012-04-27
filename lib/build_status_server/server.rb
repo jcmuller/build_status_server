@@ -1,8 +1,4 @@
 module BuildStatusServer
-  # TODO
-  # Add initialization output if verbose
-  #   like setting up udp server
-  #   and such
   class Server
     attr_reader   :config, :store_file, :mask_policy, :verbose
     attr_accessor :store, :mask
@@ -28,6 +24,8 @@ module BuildStatusServer
       sock = UDPSocket.new
       udp_server = config["udp_server"]
       sock.bind(udp_server["address"], udp_server["port"])
+
+      puts "Listening on UDP #{udp_server["address"]}:#{udp_server["port"]}" if verbose
 
       while true
         data, addr = sock.recvfrom(2048)
