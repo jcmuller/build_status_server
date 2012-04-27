@@ -1,5 +1,3 @@
-require File.expand_path("#{File.dirname(__FILE__)}/requirements")
-
 module BuildStatusServer
   class Server
     attr_reader   :config, :store_file, :mask_policy
