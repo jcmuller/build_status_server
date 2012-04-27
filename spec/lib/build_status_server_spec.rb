@@ -1,17 +1,23 @@
-require 'lib/build_status_server/server'
+$:.push File.expand_path("lib", __FILE__)
 
-describe BuildStatusServer::Server do
-  let!(:server) { BuildStatusServer::Server.new }
+require 'spec_helper'
+require 'build_status_server'
+
+describe BuildStatusServer::Server, :pending => true do
+  let!(:server) { BuildStatusServer::Server.new(:config => '/dev/null') }
+
+  describe "#load_config_file" do
+    it "should use the supplied argument" do
+      config_file = '/dev/null'
+      File.should_receive(:exists?).and_return(true)
+      server.load_config_file(config_file)
+    end
+  end
 
   describe "#load_store" do
 
     before do
       server.stub!(:store_file).and_return("/tmp/build")
-    end
-
-    it "tries to load the store file" do
-      YAML.should_receive(:load_file).with("/tmp/build")
-      server.load_store
     end
 
     it "initializes an empty hash if store file doesn't exist" do
