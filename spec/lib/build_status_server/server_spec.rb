@@ -1,10 +1,12 @@
-$:.push File.expand_path("lib", __FILE__)
-
 require 'spec_helper'
 require 'build_status_server'
 
 describe BuildStatusServer::Server do
   let(:server) { BuildStatusServer::Server.new }
+
+  before do
+    STDERR.should_receive :puts
+  end
 
   describe "#listen"
 
