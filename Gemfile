@@ -6,6 +6,7 @@ gem "json"
 
 group :test do
   gem "rspec"
+  gem "ci_reporter"
 end
 
 group :development do
