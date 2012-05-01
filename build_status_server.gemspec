@@ -16,11 +16,19 @@ built for my employer ChallengePost (http://challengepost.com). It works in
 conjunction with our Jenkins Continuous Integration server (and its
 Notification Plugin)) and an Arduino powered Traffic Light controller
 (https://github.com/jcmuller/TrafficLightController) with a pseudo-RESTful API.
-
   EOS
   s.description = "A build notifier server for Jenkins CI that controls an XFD over HTTP"
 
-  s.files = Dir["{lib/**/*,spec/**/*}"] + %w(bin/build_status_server config/config-example.yml LICENSE README.md Gemfile Gemfile.lock build_status_server.gemspec)
+  s.files = Dir["{lib/**/*,spec/**/*}"] + %w(
+    Gemfile
+    Gemfile.lock
+    LICENSE
+    README.md
+    bin/build_status_server
+    build_status_server.gemspec
+    config/config-example.yml
+  )
+
   s.require_path = "lib"
   s.bindir = "bin"
   s.executables = %w(build_status_server)
@@ -28,6 +36,7 @@ Notification Plugin)) and an Arduino powered Traffic Light controller
   s.homepage = "http://github.com/jcmuller/build_status_server"
   s.test_files = Dir["spec/**/*_spec.rb"]
 
+  s.add_development_dependency("rake")
   s.add_development_dependency("ruby-debug")
   s.add_development_dependency("sinatra")
 
