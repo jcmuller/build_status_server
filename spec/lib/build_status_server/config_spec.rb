@@ -60,7 +60,7 @@ describe BuildStatusServer::Config do
 
     it "should throw an exception if the config file isn't a hash" do
       file_name = nil
-      Tempfile.open(file_name) do |f|
+      Tempfile.open("base") do |f|
         f.puts "YADDA YADDA"
         file_name = f.path
       end
