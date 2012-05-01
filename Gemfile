@@ -7,10 +7,10 @@ gem "json"
 group :test do
   gem "rspec"
   gem "ci_reporter"
+  gem "ruby-debug"
 end
 
 group :development do
-  gem "ruby-debug"
   gem "sinatra"
 end
 
