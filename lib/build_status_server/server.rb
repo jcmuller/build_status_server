@@ -27,16 +27,20 @@ is listening at the same port (#{udp_server["address"]}:#{udp_server["port"]}
 
       puts "Listening on UDP #{udp_server["address"]}:#{udp_server["port"]}" if config.verbose
 
-      while true
-        data, addr = sock.recvfrom(2048)
+      begin
+        while true
+          data, addr = sock.recvfrom(2048)
 
-        if process_job(data)
-          status = process_all_statuses
-          notify(status)
+          if process_job(data)
+            status = process_all_statuses
+            notify(status)
+          end
         end
+      rescue Interrupt
+        puts "Good bye."
+        sock.close
+        exit
       end
-
-      sock.close
     end
 
     private
