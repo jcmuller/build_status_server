@@ -37,8 +37,7 @@ Notification Plugin)) and an Arduino powered Traffic Light controller
   s.test_files = Dir["spec/**/*_spec.rb"]
 
   s.add_development_dependency("rake")
-  s.add_development_dependency("pry")
-  s.add_development_dependency("pry-nav")
+  s.add_development_dependency("ruby-debug19")
   s.add_development_dependency("sinatra")
 
   s.add_dependency("json")

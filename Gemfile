@@ -7,8 +7,7 @@ gem "json"
 group :test do
   gem "rspec"
   gem "ci_reporter"
-  gem 'pry'
-  gem 'pry-nav'
+  gem "ruby-debug19"
 end
 
 group :development do
