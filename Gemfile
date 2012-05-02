@@ -8,6 +8,7 @@ group :test do
   gem "rspec"
   gem "ci_reporter"
   gem "ruby-debug19"
+  gem 'simplecov', :require => false
 end
 
 group :development do
