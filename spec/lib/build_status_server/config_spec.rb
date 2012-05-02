@@ -1,6 +1,6 @@
-require 'spec_helper'
-require 'build_status_server'
-require 'tempfile'
+require "spec_helper"
+require "build_status_server"
+require "tempfile"
 
 describe BuildStatusServer::Config do
   let(:config) { BuildStatusServer::Config.new }
@@ -15,7 +15,7 @@ describe BuildStatusServer::Config do
     it "should set the config values from yaml file" do
       config.should_receive(:load_config_file).and_return(YAML.load(config.send(:get_example_config)))
       config.load
-      config.udp_server.should == {'address' => '127.0.0.1', 'port' => 1234}
+      config.udp_server.should == {"address" => "127.0.0.1", "port" => 1234}
       config.verbose.should == false
     end
   end
@@ -24,7 +24,7 @@ describe BuildStatusServer::Config do
     it "should load the yaml file passed in as a file argument" do
       file_name = nil
 
-      Tempfile.open('config') do |f|
+      Tempfile.open(["config", ".yml"]) do |f|
         f.puts "---"
         f.puts "key: value"
         f.puts "key2: value2"
@@ -39,7 +39,7 @@ describe BuildStatusServer::Config do
 
     it "should try to load paths from the locations to try" do
       file_name = nil
-      Tempfile.open("config") do |f|
+      Tempfile.open(["config", ".yml"]) do |f|
         f.puts "---"
         f.puts "key: value"
         f.puts "key2: value2"
@@ -60,7 +60,7 @@ describe BuildStatusServer::Config do
 
     it "should throw an exception if the config file isn't a hash" do
       file_name = nil
-      Tempfile.open("base") do |f|
+      Tempfile.open(["base", ".yml"]) do |f|
         f.puts "YADDA YADDA"
         file_name = f.path
       end

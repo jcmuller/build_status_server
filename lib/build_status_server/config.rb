@@ -17,6 +17,10 @@ module BuildStatusServer
       super
     end
 
+    def respond_to?(meth)
+      config.has_key?(meth.to_s) || super
+    end
+
     def store_file
       return File.expand_path(".", store["filename"]) if store
       nil
