@@ -25,7 +25,7 @@ end
 
 desc "release gem"
 task :release => :build do
-  system "gem push build_status_server-#{BuildStatusServer::VERSION}"
+  system "gem push build_status_server-#{BuildStatusServer::VERSION}.gem"
 end
 
 task :default => :spec
