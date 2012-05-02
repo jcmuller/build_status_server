@@ -86,8 +86,8 @@ The address configured is not available (#{address})
       status = job["build"]["status"]
 
       if phase == "FINISHED"
-        # Got SUCCESS for topic_action_master on Tue May 01 12:02:31 -0400 2012 [{"name"=>"topic_action_master", "url"=>"job/topic_action_master/", "build"=>{"number"=>98, "url"=>"job/topic_action_master/98/", "status"=>"SUCCESS", "phase"=>"FINISHED", "full_url"=>"http://ci.berman.challengepost.com/job/topic_action_master/98/"}}]
-        STDOUT.puts "Got #{status} for #{build_name} on #{Time.now} [#{job.inspect}]" if config.verbose
+        # Got SUCCESS for topic_action_master on Tue May 01 12:02:31 -0400 2012 []
+        STDOUT.puts "Got #{status} for #{build_name} on #{Time.now} [#{job_internals(job)}]" if config.verbose
         case status
         when "SUCCESS", "FAILURE"
           load_store
@@ -98,10 +98,14 @@ The address configured is not available (#{address})
       else
         # Started for topic_action_master on Tue May 01 12:00:30 -0400 2012 [{"name"=>"topic_action_master", "url"=>"job/topic_action_master/", "build"=>{"number"=>98, "url"=>"job/topic_action_master/98/", "phase"= >"STARTED", "full_url"=>"http://ci.berman.challengepost.com/job/topic_action_master/98/"}}]
         # Started for topic_action_master on Tue May 01 12:02:31 -0400 2012 [{"name"=>"topic_action_master", "url"=>"job/topic_action_master/", "build"=>{"number"=>98, "url"=>"job/topic_action_master/98/", "status" =>"SUCCESS", "phase"=>"COMPLETED", "full_url"=>"http://ci.berman.challengepost.com/job/topic_action_master/98/"}}]
-        STDOUT.puts "Started for #{build_name} on #{Time.now} [#{job.inspect}]" if config.verbose
+        STDOUT.puts "Started for #{build_name} on #{Time.now} [#{job_internals(job)}]" if config.verbose
       end
 
       return false
+    end
+
+    def job_internals(job)
+      "build=>#{job["build"]["number"]}, status=>#{job["build"]["status"]}"
     end
 
     def should_process_build(build_name)
