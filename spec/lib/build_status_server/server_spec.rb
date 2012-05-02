@@ -12,9 +12,93 @@ describe BuildStatusServer::Server do
 
   context "private methods" do
 
-    describe "#setup_udp_server"
+    describe "#setup_udp_server" do
+      it "reads the udp_server options from configuration file" do
+        server.config.stub!(:udp_server).and_return({"address" => "address", "port" => "port"})
+        socket = mock(:udp_socket)
+        socket.should_receive(:bind).with("address", "port")
+        UDPSocket.should_receive(:new).and_return(socket)
 
-    describe "#process_loop"
+        server.send(:setup_udp_server)
+      end
+
+      it "instantiates a UDPSocket object and binds it to address and port" do
+        server.config.stub!(:udp_server).and_return({"address" => "127.0.0.1", "port" => "9999"})
+
+        server.send(:setup_udp_server)
+
+        client = UDPSocket.new
+        client.connect("127.0.0.1", 9999)
+        client.send "hello, world!", 0
+        msg = server.udp_server.recvfrom(13)
+
+        msg[0].should == "hello, world!"
+        ["AF_INET", "localhost", "127.0.0.1"].each do |e|
+          msg[1].should include e
+        end
+      end
+
+      it "should show message and exit when connecting to address not available" do
+        server.config.stub!(:udp_server).and_return({"address" => "192.192.192.192", "port" => "9999"})
+
+        STDERR.should_receive(:puts).with("The address configured is not available (192.192.192.192)\n\n")
+        server.should_receive(:exit)
+
+        server.send(:setup_udp_server)
+      end
+
+      it "it recovers from an address in use exception" do
+        server.config.stub!(:udp_server).and_return({"address" => "127.0.0.1", "port" => "9999"})
+
+        socket = mock(:udp_socket)
+        socket.should_receive(:bind).and_raise(Errno::EADDRINUSE)
+        UDPSocket.should_receive(:new).and_return(socket)
+
+        STDERR.should_receive(:puts).with("There appears that another instance is running, or another process\nis listening on the same port (127.0.0.1:9999)\n\n")
+        server.should_receive(:exit)
+        server.send(:setup_udp_server)
+      end
+
+      it "if verbose is enabled, show message" do
+        server.config.stub!(:udp_server).and_return({"address" => "address", "port" => "port"})
+        socket = mock(:udp_socket)
+        socket.should_receive(:bind).with("address", "port")
+        UDPSocket.should_receive(:new).and_return(socket)
+
+        server.config.stub!(:verbose).and_return(true)
+        STDOUT.should_receive(:puts).with("Listening on UDP address:port")
+
+        server.send(:setup_udp_server)
+      end
+    end
+
+    describe "#process_loop" do
+      it "should process all statuses and notify when process job returns true" do
+        socket = mock(:udp_socket)
+        socket.stub!(:recvfrom).and_return("data", "addr")
+
+        server.should_receive(:udp_server).and_return(socket)
+        server.should_receive(:process_job).with("data").and_return(true)
+
+        server.should_receive(:process_all_statuses).and_return("status")
+        server.should_receive(:notify).with("status")
+
+        server.send(:process_loop)
+      end
+
+      it "should not process all statuses or notify when process job returns false" do
+        socket = mock(:udp_socket)
+        socket.stub!(:recvfrom).and_return("data", "addr")
+
+        server.should_receive(:udp_server).and_return(socket)
+        server.should_receive(:process_job).with("data").and_return(false)
+
+        server.should_not_receive(:process_all_statuses)
+        server.should_not_receive(:notify)
+
+        server.send(:process_loop)
+      end
+    end
 
     describe "#load_store" do
       before do
