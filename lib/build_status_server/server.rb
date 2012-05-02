@@ -45,9 +45,15 @@ is listening on the same port (#{address}:#{port})
 
         EOT
         exit
+      rescue Errno::EADDRNOTAVAIL
+        STDERR.puts <<-EOT
+The address configured is not available (#{address})
+
+        EOT
+        exit
       end
 
-      puts "Listening on UDP #{address}:#{port}" if config.verbose
+      STDOUT.puts "Listening on UDP #{address}:#{port}" if config.verbose
     end
 
     def load_store
