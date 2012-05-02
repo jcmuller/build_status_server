@@ -19,7 +19,7 @@ Notification Plugin)) and an Arduino powered Traffic Light controller
   EOS
   s.description = "A build notifier server for Jenkins CI that controls an XFD over HTTP"
 
-  s.files = Dir["{lib/**/*,spec/**/*}"] + %w(
+  s.files = Dir["{lib/**/*,spec/**/*.rb,spec/support/*}"] + %w(
     Gemfile
     Gemfile.lock
     LICENSE
