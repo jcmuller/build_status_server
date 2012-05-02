@@ -1,9 +1,6 @@
-# TODO
-# move all configuration stuff to Config
-# and just call config[:blaj] instead of if blah
 module BuildStatusServer
   class Server
-    attr_reader :config, :store
+    attr_reader :config, :store, :udp_server
 
     def initialize(options = {})
       @config = Config.new
@@ -11,30 +8,11 @@ module BuildStatusServer
     end
 
     def listen
-      sock = UDPSocket.new
-      udp_server = config.udp_server
-
-      begin
-        sock.bind(udp_server["address"], udp_server["port"])
-      rescue Errno::EADDRINUSE
-        STDERR.puts <<-EOT
-There appears that another instance is running, or another process
-is listening at the same port (#{udp_server["address"]}:#{udp_server["port"]}
-
-        EOT
-        exit
-      end
-
-      puts "Listening on UDP #{udp_server["address"]}:#{udp_server["port"]}" if config.verbose
+      setup_udp_server
 
       begin
         while true
-          data, addr = sock.recvfrom(2048)
-
-          if process_job(data)
-            status = process_all_statuses
-            notify(status)
-          end
+          process_loop
         end
       rescue Interrupt
         puts "Good bye."
@@ -44,6 +22,33 @@ is listening at the same port (#{udp_server["address"]}:#{udp_server["port"]}
     end
 
     private
+
+    def process_loop
+      data, addr = udp_server.recvfrom(2048)
+
+      if process_job(data)
+        status = process_all_statuses
+        notify(status)
+      end
+    end
+
+    def setup_udp_server
+      address, port = config.udp_server["address"], config.udp_server["port"]
+      @udp_server = UDPSocket.new
+
+      begin
+        udp_server.bind(address, port)
+      rescue Errno::EADDRINUSE
+        STDERR.puts <<-EOT
+There appears that another instance is running, or another process
+is listening on the same port (#{address}:#{port})
+
+        EOT
+        exit
+      end
+
+      puts "Listening on UDP #{address}:#{port}" if config.verbose
+    end
 
     def load_store
       @store = begin
@@ -75,6 +80,7 @@ is listening at the same port (#{udp_server["address"]}:#{udp_server["port"]}
       status = job["build"]["status"]
 
       if phase == "FINISHED"
+        # Got SUCCESS for topic_action_master on Tue May 01 12:02:31 -0400 2012 [{"name"=>"topic_action_master", "url"=>"job/topic_action_master/", "build"=>{"number"=>98, "url"=>"job/topic_action_master/98/", "status"=>"SUCCESS", "phase"=>"FINISHED", "full_url"=>"http://ci.berman.challengepost.com/job/topic_action_master/98/"}}]
         STDOUT.puts "Got #{status} for #{build_name} on #{Time.now} [#{job.inspect}]" if config.verbose
         case status
         when "SUCCESS", "FAILURE"
@@ -84,6 +90,8 @@ is listening at the same port (#{udp_server["address"]}:#{udp_server["port"]}
           return true
         end
       else
+        # Started for topic_action_master on Tue May 01 12:00:30 -0400 2012 [{"name"=>"topic_action_master", "url"=>"job/topic_action_master/", "build"=>{"number"=>98, "url"=>"job/topic_action_master/98/", "phase"= >"STARTED", "full_url"=>"http://ci.berman.challengepost.com/job/topic_action_master/98/"}}]
+        # Started for topic_action_master on Tue May 01 12:02:31 -0400 2012 [{"name"=>"topic_action_master", "url"=>"job/topic_action_master/", "build"=>{"number"=>98, "url"=>"job/topic_action_master/98/", "status" =>"SUCCESS", "phase"=>"COMPLETED", "full_url"=>"http://ci.berman.challengepost.com/job/topic_action_master/98/"}}]
         STDOUT.puts "Started for #{build_name} on #{Time.now} [#{job.inspect}]" if config.verbose
       end
 
@@ -103,7 +111,7 @@ is listening at the same port (#{udp_server["address"]}:#{udp_server["port"]}
     def process_all_statuses
       pass = true
 
-      @store.values.each do |val|
+      store.values.each do |val|
         pass &&= (val == "pass" || val == "SUCCESS")
       end
 
@@ -116,6 +124,7 @@ is listening at the same port (#{udp_server["address"]}:#{udp_server["port"]}
       attempts = 0
       light  = status ? tcp_client["pass"] : tcp_client["fail"]
 
+      client = nil
       begin
         timeout(5) do
           attempts += 1
@@ -123,7 +132,6 @@ is listening at the same port (#{udp_server["address"]}:#{udp_server["port"]}
           client.print "GET #{light} HTTP/1.0\n\n"
           answer = client.gets(nil)
           STDOUT.puts answer if config.verbose
-          client.close
         end
       rescue Timeout::Error => ex
         STDERR.puts "Error: #{ex} while trying to send #{light}"
@@ -133,29 +141,9 @@ is listening at the same port (#{udp_server["address"]}:#{udp_server["port"]}
         STDERR.puts "Will wait for 2 seconds and try again..."
         sleep 2
         retry unless attempts > 2
+      ensure
+        client.close if client
       end
     end
   end
 end
-
-__END__
-
-Example payload:
-{
-  "name":"test",
-  "url":"job/test/",
-  "build":{
-    "full_url":"http://cronus.local:3001/job/test/20/",
-    "number":20,
-    "phase":"FINISHED",
-    "status":"SUCCESS",
-    "url":"job/test/20/"
-  }
-}
-
-We're getting this error once in a while:
-/usr/local/lib/ruby/1.8/timeout.rb:64:in `notify': execution expired (Timeout::Error)
-        from /home/jcmuller/build_notifier/lib/server.rb:102:in `notify'
-        from /home/jcmuller/build_notifier/lib/server.rb:33:in `listen'
-        from bin/server:5
-
