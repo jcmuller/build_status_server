@@ -307,7 +307,8 @@ describe BuildStatusServer::Server do
           options = {
             "fail" => "fail",
             "host" => "host",
-            "port" => "port"
+            "port" => "port",
+            "attempts" => 2
           }
           config = mock(:config)
           config.should_receive(:tcp_client).and_return(options)
@@ -343,6 +344,29 @@ describe BuildStatusServer::Server do
 
           server.send(:notify, false)
         end
+      end
+
+      it "should gracefully recover if config doesn't have attempts configured" do
+        options = {
+          "fail" => "fail",
+          "host" => "host",
+          "port" => "port"
+        }
+
+        config = mock(:config)
+        config.should_receive(:tcp_client).and_return(options)
+        config.should_receive(:verbose).and_return(false)
+
+        server.should_receive(:config).twice.and_return(config)
+        client.should_receive(:close)
+
+        client.should_receive(:gets).and_return("answer")
+        TCPSocket.should_receive(:new).exactly(3).with("host", "port").and_return(client)
+        STDERR.should_receive(:puts).exactly(2).with("Error: Timeout::Error while trying to send fail")
+        client.should_receive(:print).exactly(2).with("GET fail HTTP/1.0\n\n").and_raise(Timeout::Error)
+        client.should_receive(:print).with("GET fail HTTP/1.0\n\n")
+
+        server.send(:notify, false)
       end
     end
 
