@@ -33,7 +33,7 @@ describe BuildStatusServer::Server do
         msg = server.udp_server.recvfrom(13)
 
         msg[0].should == "hello, world!"
-        ["AF_INET", "localhost", "127.0.0.1"].each do |e|
+        ["AF_INET", "127.0.0.1"].each do |e|
           msg[1].should include e
         end
       end
@@ -219,7 +219,7 @@ describe BuildStatusServer::Server do
           "build" => { "phase" => "FINISHED", "status" => "some status" }
         })
         Time.should_receive(:now).and_return("this is the time")
-        STDOUT.should_receive(:puts).with('Got some status for name on this is the time [{"name"=>"name", "build"=>{"status"=>"some status", "phase"=>"FINISHED"}}]')
+        STDOUT.should_receive(:puts).with('Got some status for name on this is the time [{"name"=>"name", "build"=>{"phase"=>"FINISHED", "status"=>"some status"}}]')
         server.send(:process_job).should be_false
       end
 
@@ -231,7 +231,7 @@ describe BuildStatusServer::Server do
           "build" => { "phase" => "STARTED", "status" => "some status" }
         })
         Time.should_receive(:now).and_return("this is the time")
-        STDOUT.should_receive(:puts).with("Started for name on this is the time [{\"name\"=>\"name\", \"build\"=>{\"status\"=>\"some status\", \"phase\"=>\"STARTED\"}}]")
+        STDOUT.should_receive(:puts).with("Started for name on this is the time [{\"name\"=>\"name\", \"build\"=>{\"phase\"=>\"STARTED\", \"status\"=>\"some status\"}}]")
         server.send(:process_job).should be_false
       end
 
@@ -249,7 +249,7 @@ describe BuildStatusServer::Server do
             "name" => "name",
             "build" => { "phase" => "FINISHED", "status" => "SUCCESS" }
           })
-          STDOUT.should_receive(:puts).with("Got SUCCESS for name on this is the time [{\"name\"=>\"name\", \"build\"=>{\"status\"=>\"SUCCESS\", \"phase\"=>\"FINISHED\"}}]")
+          STDOUT.should_receive(:puts).with("Got SUCCESS for name on this is the time [{\"name\"=>\"name\", \"build\"=>{\"phase\"=>\"FINISHED\", \"status\"=>\"SUCCESS\"}}]")
 
           server.send(:process_job).should be_true
         end
@@ -259,7 +259,7 @@ describe BuildStatusServer::Server do
             "name" => "name",
             "build" => { "phase" => "FINISHED", "status" => "FAILURE" }
           })
-          STDOUT.should_receive(:puts).with("Got FAILURE for name on this is the time [{\"name\"=>\"name\", \"build\"=>{\"status\"=>\"FAILURE\", \"phase\"=>\"FINISHED\"}}]")
+          STDOUT.should_receive(:puts).with("Got FAILURE for name on this is the time [{\"name\"=>\"name\", \"build\"=>{\"phase\"=>\"FINISHED\", \"status\"=>\"FAILURE\"}}]")
 
           server.send(:process_job).should be_true
         end
