@@ -130,6 +130,7 @@ The address configured is not available (#{address})
 
     def notify(status)
       tcp_client = config.tcp_client
+      tcp_client["attempts"] ||= 2
 
       attempts = 0
       light  = status ? tcp_client["pass"] : tcp_client["fail"]
@@ -145,12 +146,12 @@ The address configured is not available (#{address})
         end
       rescue Timeout::Error => ex
         STDERR.puts "Error: #{ex} while trying to send #{light}"
-        retry unless attempts > 2
+        retry unless attempts > tcp_client["attempts"]
       rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH => ex
         STDERR.puts "Error: #{ex} while trying to send #{light}"
         STDERR.puts "Will wait for 2 seconds and try again..."
         sleep 2
-        retry unless attempts > 2
+        retry unless attempts > tcp_client["attempts"]
       ensure
         client.close if client
       end

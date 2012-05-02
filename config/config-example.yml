@@ -6,6 +6,7 @@
       port: 4567
       pass: /green
       fail: /red
+      attempts: 5
     store:
       filename: /tmp/build_result.yml
     mask:
