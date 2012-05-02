@@ -6,6 +6,8 @@
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
 require "simplecov"
+require 'simplecov-rcov'
+SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
 SimpleCov.start
 
 require "rspec/core"
