@@ -216,10 +216,10 @@ describe BuildStatusServer::Server do
         server.should_receive(:should_process_build).and_return(true)
         JSON.should_receive(:parse).with("{}").and_return({
           "name" => "name",
-          "build" => { "phase" => "FINISHED", "status" => "some status" }
+          "build" => { "phase" => "FINISHED", "status" => "some status", "number" => "number" }
         })
         Time.should_receive(:now).and_return("this is the time")
-        STDOUT.should_receive(:puts).with('Got some status for name on this is the time [{"name"=>"name", "build"=>{"phase"=>"FINISHED", "status"=>"some status"}}]')
+        STDOUT.should_receive(:puts).with('Got some status for name on this is the time [build=>number, status=>some status]')
         server.send(:process_job).should be_false
       end
 
@@ -228,10 +228,10 @@ describe BuildStatusServer::Server do
         server.should_receive(:should_process_build).and_return(true)
         JSON.should_receive(:parse).with("{}").and_return({
           "name" => "name",
-          "build" => { "phase" => "STARTED", "status" => "some status" }
+          "build" => { "phase" => "STARTED", "status" => "some status", "number" => "number" }
         })
         Time.should_receive(:now).and_return("this is the time")
-        STDOUT.should_receive(:puts).with("Started for name on this is the time [{\"name\"=>\"name\", \"build\"=>{\"phase\"=>\"STARTED\", \"status\"=>\"some status\"}}]")
+        STDOUT.should_receive(:puts).with("Started for name on this is the time [build=>number, status=>some status]")
         server.send(:process_job).should be_false
       end
 
@@ -247,9 +247,9 @@ describe BuildStatusServer::Server do
         it "should return true and write yaml file when phase is FINISHED and status is SUCCESS" do
           JSON.should_receive(:parse).with("{}").and_return({
             "name" => "name",
-            "build" => { "phase" => "FINISHED", "status" => "SUCCESS" }
+            "build" => { "phase" => "FINISHED", "status" => "SUCCESS", "number" => "number" }
           })
-          STDOUT.should_receive(:puts).with("Got SUCCESS for name on this is the time [{\"name\"=>\"name\", \"build\"=>{\"phase\"=>\"FINISHED\", \"status\"=>\"SUCCESS\"}}]")
+          STDOUT.should_receive(:puts).with("Got SUCCESS for name on this is the time [build=>number, status=>SUCCESS]")
 
           server.send(:process_job).should be_true
         end
@@ -257,9 +257,9 @@ describe BuildStatusServer::Server do
         it "should return true and write yaml file when phase is FINISHED and status is FAILURE" do
           JSON.should_receive(:parse).with("{}").and_return({
             "name" => "name",
-            "build" => { "phase" => "FINISHED", "status" => "FAILURE" }
+            "build" => { "phase" => "FINISHED", "status" => "FAILURE", "number" => "number" }
           })
-          STDOUT.should_receive(:puts).with("Got FAILURE for name on this is the time [{\"name\"=>\"name\", \"build\"=>{\"phase\"=>\"FINISHED\", \"status\"=>\"FAILURE\"}}]")
+          STDOUT.should_receive(:puts).with("Got FAILURE for name on this is the time [build=>number, status=>FAILURE]")
 
           server.send(:process_job).should be_true
         end
