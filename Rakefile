@@ -14,7 +14,7 @@ desc "clean backup and swap files, and artifacts"
 task :clean do
   require "fileutils"
   Dir["{**/*~,**/.*.sw?,coverage/**,spec/reports/**}"].each do |file|
-    rm file
+    rm_rf file
   end
 end
 
