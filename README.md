@@ -1,4 +1,5 @@
 # Build Notifier
+[![Build Status](https://secure.travis-ci.org/jcmuller/build_status_server.png?branch=master)](http://travis-ci.org/jcmuller/build_status_server)
 
 This utility is part of an XFD (eXtreeme Feedback Device) solution designed and
 built for my employer [ChallengePost](http://challengepost.com). It works in
