@@ -7,16 +7,16 @@ module BuildStatusServer
       config.load(options)
     end
 
-    def listen
+    def listen(run_forever = true)
       setup_udp_server
 
       begin
-        while true
+        while run_forever
           process_loop
         end
       rescue Interrupt
-        puts "Good bye."
-        sock.close
+        STDOUT.puts "Good bye."
+        udp_server.close
         exit
       end
     end

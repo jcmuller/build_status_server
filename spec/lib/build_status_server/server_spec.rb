@@ -8,7 +8,27 @@ describe BuildStatusServer::Server do
     STDERR.should_receive(:puts)
   end
 
-  describe "#listen"
+  describe "#listen" do
+    it "should setup the udp server" do
+      server.should_receive(:setup_udp_server)
+      server.listen(false)
+    end
+
+    it "should close socket if interrupted" do
+      # inject interruption
+      server.should_receive(:process_loop).and_raise(Interrupt)
+
+      server.should_receive(:setup_udp_server)
+      udp_server = mock(:udp_server, :close => true)
+      server.should_receive(:udp_server).and_return(udp_server)
+
+      STDOUT.should_receive(:puts).with("Good bye.")
+      udp_server.should_receive(:close)
+      server.should_receive(:exit)
+
+      server.listen
+    end
+  end
 
   context "private methods" do
 
