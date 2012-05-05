@@ -147,13 +147,20 @@ The address configured is not available (#{address})
         STDERR.puts "Error: #{ex} while trying to send #{light}"
         retry unless attempts > tcp_client["attempts"]
       rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH => ex
+        wait = wait_for(attempts)
         STDERR.puts "Error: #{ex} while trying to send #{light}"
-        STDERR.puts "Will wait for 2 seconds and try again..."
-        sleep 2
+        STDERR.puts "Will wait for #{wait} seconds and try again..."
+        # sleep 2 seconds the first attempt, 4 the next, 8 the following...
+        sleep wait
         retry unless attempts > tcp_client["attempts"]
       ensure
         client.close if client
       end
+    end
+
+    def wait_for(attempt = 1)
+      return 60 if attempt > 5 # Cap at one minute wait
+      2**attempt
     end
   end
 end
