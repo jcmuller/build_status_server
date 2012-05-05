@@ -224,6 +224,11 @@ describe BuildStatusServer::Server do
         server.send(:process_job).should be_false
       end
 
+      it "doesn't die if invalid JSON is passed in" do
+        STDERR.should_receive(:puts).with("Invalid JSON! (Or at least JSON wasn't able to parse it...)\nReceived: {b => \"123\"}")
+        expect { server.send(:process_job, '{b => "123"}') }.should_not raise_error(JSON::ParserError)
+      end
+
       it "returns false and says so on stderr if payload doesn't have a hash for build" do
         server.should_receive(:should_process_build).and_return(true)
         JSON.should_receive(:parse).and_return({"build" => "Not a hash!"})

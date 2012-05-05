@@ -67,7 +67,12 @@ The address configured is not available (#{address})
 
 
     def process_job(data = "{}")
-      job = JSON.parse(data)
+      job = begin
+              JSON.parse(data)
+            rescue JSON::ParserError => ex
+              STDERR.puts "Invalid JSON! (Or at least JSON wasn't able to parse it...)\nReceived: #{data}"
+              return false
+            end
 
       build_name = job["name"]
 
