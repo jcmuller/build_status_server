@@ -1,25 +1,13 @@
 #!/usr/bin/env ruby
 
 require "rubygems"
-require "sinatra"
+require "sinatra/base"
 
-enable :sessions
+class TestTcpServer < Sinatra::Base
 
-#set :logging, true
+  get(%r(/(red|green))) do |path|
+    "<html>#{path}</html>"
+  end
 
-before do
-  STDERR.puts "[#{Time.now}] [test_server] #{request.path}"
-end
-
-get "/" do
-  "<html>/</html>"
-end
-
-get %r(/(red|green|yellow|alive|current|off)) do |path|
-  session[:active] = path
-  "<html>#{path}</html>"
-end
-
-get "/active" do
-  "<html>#{session[:active]}</html>"
+  run!
 end
