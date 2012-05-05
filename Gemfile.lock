@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    build_status_server (0.8)
+    build_status_server (0.10)
       json
 
 GEM
