@@ -1,0 +1,10 @@
+{
+  "name":"test-master",
+  "url":"job/test/",
+  "build":{
+    "full_url":"http://cronus.local:3001/job/test/20/",
+    "number":20,
+    "phase":"STARTED",
+    "url":"job/test/21/"
+  }
+}
