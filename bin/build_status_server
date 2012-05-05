@@ -1,43 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'getoptlong'
-
-possible_arguments = [
-  ['--config', '-c', GetoptLong::OPTIONAL_ARGUMENT],
-  ['--development', '-d', GetoptLong::NO_ARGUMENT],
-  ['--help', '-h', GetoptLong::NO_ARGUMENT],
-  ['--verbose', '-v', GetoptLong::NO_ARGUMENT]
-]
-
-opts = GetoptLong.new(*possible_arguments)
-
-options = {}
-showhelp = false
-
-opts.each do |opt, arg|
-  case opt
-  when '--development'
-    $:.push 'lib'
-  when '--help'
-    puts <<-EOT
-    #{File.basename(__FILE__)} [#{possible_arguments.map{|arg| arg[0] + (arg[2] == GetoptLong::OPTIONAL_ARGUMENT ? ' argument' : '')}.join('], [')}]
-
-    All the arguments are optional.
-
-      --config, -c      Specify what configuration file to load
-      --development, -d Whether we should load libraries from ./lib
-      --help, -h        Display this very helpful text
-      --verbose, -v     Be more informative about what's going on
-
-    EOT
-    exit
-  when '--config'
-    options[:config] = arg
-  when '--verbose'
-    options[:verbose] = true
-  end
-end
-
+$:.push 'lib'
 require 'build_status_server'
 
-BuildStatusServer::Server.new(options).listen
+BuildStatusServer::CLI.new

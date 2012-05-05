@@ -8,7 +8,27 @@ describe BuildStatusServer::Server do
     STDERR.should_receive(:puts)
   end
 
-  describe "#listen"
+  describe "#listen" do
+    it "should setup the udp server" do
+      server.should_receive(:setup_udp_server)
+      server.listen(false)
+    end
+
+    it "should close socket if interrupted" do
+      # inject interruption
+      server.should_receive(:process_loop).and_raise(Interrupt)
+
+      server.should_receive(:setup_udp_server)
+      udp_server = mock(:udp_server, :close => true)
+      server.should_receive(:udp_server).and_return(udp_server)
+
+      STDOUT.should_receive(:puts).with("Good bye.")
+      udp_server.should_receive(:close)
+      server.should_receive(:exit)
+
+      server.listen
+    end
+  end
 
   context "private methods" do
 
@@ -389,6 +409,18 @@ describe BuildStatusServer::Server do
       it "should return false if at least one value isn't pass or SUCCESS" do
         server.should_receive(:store).and_return(mock(:blah, :values => %w(SUCCESS blah SUCCESS)))
         server.send(:process_all_statuses).should be_false
+      end
+    end
+
+    describe "#job_internals" do
+      it "should return build number and status" do
+        params = {"build" => {"number" => "number", "status" => "status"}}
+        server.send(:job_internals, params).should == "build=>number, status=>status"
+      end
+
+      it "should return only build if no status" do
+        params = {"build" => {"number" => "number"}}
+        server.send(:job_internals, params).should == "build=>number"
       end
     end
 

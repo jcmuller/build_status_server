@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+require "rubygems"
+require "sinatra/base"
+
+class TestTcpServer < Sinatra::Base
+
+  get(%r(/(red|green))) do |path|
+    "<html>#{path}</html>"
+  end
+
+  run!
+end
