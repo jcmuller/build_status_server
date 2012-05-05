@@ -352,13 +352,15 @@ describe BuildStatusServer::Server do
         it "should not connect and retry 2 times" do
           STDERR.should_receive(:puts).with("Error: Connection refused while trying to send fail")
           STDERR.should_receive(:puts).with("Error: No route to host while trying to send fail")
-          STDERR.should_receive(:puts).exactly(2).with("Will wait for 2 seconds and try again...")
+          STDERR.should_receive(:puts).with("Will wait for 2 seconds and try again...")
+          STDERR.should_receive(:puts).with("Will wait for 4 seconds and try again...")
 
           TCPSocket.should_receive(:new).with("host", "port").and_raise(Errno::ECONNREFUSED)
           TCPSocket.should_receive(:new).with("host", "port").and_raise(Errno::EHOSTUNREACH)
           TCPSocket.should_receive(:new).with("host", "port").and_return(client)
 
-          server.should_receive(:sleep).twice.with(2)
+          server.should_receive(:sleep).with(2)
+          server.should_receive(:sleep).with(4)
 
           client.should_receive(:print).with("GET fail HTTP/1.0\n\n")
 
@@ -421,6 +423,18 @@ describe BuildStatusServer::Server do
       it "should return only build if no status" do
         params = {"build" => {"number" => "number"}}
         server.send(:job_internals, params).should == "build=>number"
+      end
+    end
+
+    describe "#wait_for" do
+      it "should return 2**n for each attempt n up to 5" do
+        server.send(:wait_for, 1).should == 2
+        server.send(:wait_for, 5).should == 32
+      end
+
+      it "should return 60 for anything over 5" do
+        server.send(:wait_for, 6).should == 60
+        server.send(:wait_for, 1000).should == 60
       end
     end
 
