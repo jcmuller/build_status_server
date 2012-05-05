@@ -21,7 +21,7 @@ application without any arguments, you will get a sample.
 # Execution
 
 See the options you can pass in by:
-    
+
     $ build_status_server -h
 
 # Configuration file
@@ -48,8 +48,10 @@ Whether to display informative output messages.
 
 # Development
 
-`bin/build_status_server_traffic_light_mock` is provided for development
-purposes only.
+`bin/test_tcp_server` is provided for development purposes only. It behaves
+like the server on the
+[Traffic Light controller](https://github.com/jcmuller/TrafficLightController)
+project.
 
 # Finished product
 ![my image](http://i.imgur.com/aK5rs.jpg)
