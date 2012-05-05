@@ -3,16 +3,27 @@
 require 'getoptlong'
 
 possible_arguments = [
-  ['--config', '-c', GetoptLong::OPTIONAL_ARGUMENT],
+  ['--config',      '-c', GetoptLong::REQUIRED_ARGUMENT],
   ['--development', '-d', GetoptLong::NO_ARGUMENT],
-  ['--help', '-h', GetoptLong::NO_ARGUMENT],
-  ['--verbose', '-v', GetoptLong::NO_ARGUMENT]
+  ['--help',        '-h', GetoptLong::NO_ARGUMENT],
+  ['--verbose',     '-v', GetoptLong::NO_ARGUMENT],
+  ['--version',     '-V', GetoptLong::NO_ARGUMENT],
 ]
 
 opts = GetoptLong.new(*possible_arguments)
 
 options = {}
 showhelp = false
+
+def get_version
+  require 'build_status_server/version'
+  <<-EOV
+#{File.basename(__FILE__)}, version #{BuildStatusServer::VERSION}
+
+(c) Juan C. Muller, 2012
+http://github.com/jcmuller/build_status_server
+  EOV
+end
 
 opts.each do |opt, arg|
   case opt
@@ -29,12 +40,16 @@ opts.each do |opt, arg|
       --help, -h        Display this very helpful text
       --verbose, -v     Be more informative about what's going on
 
+#{get_version}
     EOT
     exit
   when '--config'
     options[:config] = arg
   when '--verbose'
     options[:verbose] = true
+  when '--version'
+    puts get_version
+    exit
   end
 end
 
