@@ -38,12 +38,13 @@ describe BuildStatusServer::Server do
         socket = mock(:udp_socket)
         socket.should_receive(:bind).with("address", "port")
         UDPSocket.should_receive(:new).and_return(socket)
+        server.stub!(:udp_server).and_return(socket)
 
         server.send(:setup_udp_server)
       end
 
       it "instantiates a UDPSocket object and binds it to address and port" do
-        server.config.stub!(:udp_server).and_return({"address" => "127.0.0.1", "port" => "9999"})
+        server.config.stub!(:udp_server).and_return({"address" => "127.0.0.1", "port" => 9999})
 
         server.send(:setup_udp_server)
 
@@ -59,7 +60,7 @@ describe BuildStatusServer::Server do
       end
 
       it "should show message and exit when connecting to address not available" do
-        server.config.stub!(:udp_server).and_return({"address" => "192.192.192.192", "port" => "9999"})
+        server.config.stub!(:udp_server).and_return({"address" => "192.192.192.192", "port" => 9999})
 
         STDERR.should_receive(:puts).with("The address configured is not available (192.192.192.192)\n\n")
         server.should_receive(:exit)
@@ -68,7 +69,7 @@ describe BuildStatusServer::Server do
       end
 
       it "it recovers from an address in use exception" do
-        server.config.stub!(:udp_server).and_return({"address" => "127.0.0.1", "port" => "9999"})
+        server.config.stub!(:udp_server).and_return({"address" => "127.0.0.1", "port" => 9999})
 
         socket = mock(:udp_socket)
         socket.should_receive(:bind).and_raise(Errno::EADDRINUSE)
@@ -76,6 +77,7 @@ describe BuildStatusServer::Server do
 
         STDERR.should_receive(:puts).with("There appears that another instance is running, or another process\nis listening on the same port (127.0.0.1:9999)\n\n")
         server.should_receive(:exit)
+
         server.send(:setup_udp_server)
       end
 

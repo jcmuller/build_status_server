@@ -45,7 +45,7 @@ is listening on the same port (#{address}:#{port})
 
         EOT
         exit
-      rescue Errno::EADDRNOTAVAIL
+      rescue Errno::EADDRNOTAVAIL, SocketError
         STDERR.puts <<-EOT
 The address configured is not available (#{address})
 
