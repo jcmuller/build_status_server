@@ -9,6 +9,8 @@ module BuildStatusServer
       BuildStatusServer::Server.new(options).listen
     end
 
+    private
+
     def process_command_line_options
       @options = {}
 
