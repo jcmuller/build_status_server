@@ -66,6 +66,10 @@ strongly recommended to create one in any of the following locations:
  to use):
 
 #{get_example_config}
+
+Also, you can specify what configuration file to load by passing --config as an
+argument (see "#{File.basename($0)} --help")
+
           EOT
 
           return YAML.load(get_example_config)
@@ -80,7 +84,6 @@ strongly recommended to create one in any of the following locations:
     def locations_to_try
         %w(
           ~/.config/build_status_server/config.yml
-          ./config/config.yml
           /etc/build_status_server/config.yml
           /usr/local/etc/build_status_server/config.yml
         )
