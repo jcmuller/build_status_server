@@ -412,6 +412,18 @@ describe BuildStatusServer::Server do
       end
     end
 
+    describe "#job_internals" do
+      it "should return build number and status" do
+        params = {"build" => {"number" => "number", "status" => "status"}}
+        server.send(:job_internals, params).should == "build=>number, status=>status"
+      end
+
+      it "should return only build if no status" do
+        params = {"build" => {"number" => "number"}}
+        server.send(:job_internals, params).should == "build=>number"
+      end
+    end
+
   end
 end
 
