@@ -31,14 +31,14 @@ opts.each do |opt, arg|
     $:.push 'lib'
   when '--help'
     puts <<-EOT
-    #{File.basename(__FILE__)} [#{possible_arguments.map{|arg| arg[0] + (arg[2] == GetoptLong::OPTIONAL_ARGUMENT ? ' argument' : '')}.join('], [')}]
+Usage: #{File.basename(__FILE__)} [options]
 
-    All the arguments are optional.
-
-      --config, -c      Specify what configuration file to load
-      --development, -d Whether we should load libraries from ./lib
-      --help, -h        Display this very helpful text
-      --verbose, -v     Be more informative about what's going on
+Options:
+  -c, --config CONFIGURATION  Specify what configuration file to load
+  -d, --development           Development mode. All requirements are loaded from ./lib
+  -h, --help                  Display this very helpful text
+  -v, --verbose               Be more informative about what's going on
+  -V, --version               Print out current version info
 
 #{get_version}
     EOT
