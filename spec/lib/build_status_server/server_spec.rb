@@ -72,7 +72,7 @@ describe BuildStatusServer::Server do
         server.config.stub!(:udp_server).and_return({"address" => "127.0.0.1", "port" => 9999})
 
         socket = mock(:udp_socket)
-        socket.should_receive(:bind).and_raise(Errno::EADDRINUSE)
+        socket.should_receive(:bind).and_raise(Errno::EADDRINUSE.new)
         UDPSocket.should_receive(:new).and_return(socket)
 
         STDERR.should_receive(:puts).with("There appears that another instance is running, or another process\nis listening on the same port (127.0.0.1:9999)\n\n")
@@ -362,8 +362,8 @@ describe BuildStatusServer::Server do
           STDERR.should_receive(:puts).with("Will wait for 2 seconds and try again...")
           STDERR.should_receive(:puts).with("Will wait for 4 seconds and try again...")
 
-          TCPSocket.should_receive(:new).with("host", "port").and_raise(Errno::ECONNREFUSED)
-          TCPSocket.should_receive(:new).with("host", "port").and_raise(Errno::EHOSTUNREACH)
+          TCPSocket.should_receive(:new).with("host", "port").and_raise(Errno::ECONNREFUSED.new)
+          TCPSocket.should_receive(:new).with("host", "port").and_raise(Errno::EHOSTUNREACH.new)
           TCPSocket.should_receive(:new).with("host", "port").and_return(client)
 
           server.should_receive(:sleep).with(2)
