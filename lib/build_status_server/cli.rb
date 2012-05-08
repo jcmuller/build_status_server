@@ -5,7 +5,13 @@ module BuildStatusServer
     attr_reader :options
 
     def initialize
-      process_command_line_options
+      begin
+        process_command_line_options
+      rescue GetoptLong::MissingArgument
+        puts
+        show_help_and_exit
+      end
+
       BuildStatusServer::Server.new(options).listen
     end
 
