@@ -1,5 +1,6 @@
 # Build Notifier
 [![Build Status](https://secure.travis-ci.org/jcmuller/build_status_server.png?branch=master)](http://travis-ci.org/jcmuller/build_status_server)
+[![Dependency Status](https://gemnasium.com/pluginaweek/state_machine.png "Dependency Status")](https://gemnasium.com/jcmuller/build_status_server)
 
 This utility is part of an XFD (eXtreme Feedback Device) solution designed and
 built for my employer [ChallengePost](http://challengepost.com). It works in
