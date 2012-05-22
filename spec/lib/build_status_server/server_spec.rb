@@ -305,17 +305,17 @@ describe BuildStatusServer::Server do
             "port" => "port"
           }
           config = mock(:config)
-          config.should_receive(:tcp_client).and_return(options)
-          config.should_receive(:verbose).and_return(true)
+          config.stub(:tcp_client).and_return(options)
+          config.stub(:verbose).and_return(true)
 
-          server.should_receive(:config).twice.and_return(config)
+          server.stub(:config).and_return(config)
 
           STDOUT.should_receive(:puts).with("answer")
 
-          client.should_receive(:gets).and_return("answer")
-          client.should_receive(:close)
+          client.stub(:gets).and_return("answer")
+          client.stub(:close)
 
-          TCPSocket.should_receive(:new).with("host", "port").and_return(client)
+          TCPSocket.stub(:new).with("host", "port").and_return(client)
         end
 
         it "should send passing packet to tcp socket when status is true" do
@@ -335,16 +335,16 @@ describe BuildStatusServer::Server do
             "fail" => "fail",
             "host" => "host",
             "port" => "port",
-            "attempts" => 2
+            "attempts" => 4
           }
           config = mock(:config)
-          config.should_receive(:tcp_client).and_return(options)
-          config.should_receive(:verbose).and_return(false)
+          config.stub(:tcp_client).and_return(options)
+          config.stub(:verbose).and_return(false)
 
-          server.should_receive(:config).twice.and_return(config)
-          client.should_receive(:close)
+          server.stub(:config).and_return(config)
+          client.stub(:close)
 
-          client.should_receive(:gets).and_return("answer")
+          client.stub(:gets).and_return("answer")
         end
 
         it "should time out and retry 2 times" do

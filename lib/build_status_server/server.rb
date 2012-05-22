@@ -158,6 +158,8 @@ The address configured is not available (#{address})
         # sleep 2 seconds the first attempt, 4 the next, 8 the following...
         sleep wait
         retry unless attempts > tcp_client["attempts"]
+      rescue StandardError => ex
+        STDERR.puts "There was an error, but we don't know how to handle it: (#{ex.class}) #{ex}"
       ensure
         client.close if client
       end
