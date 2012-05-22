@@ -151,7 +151,7 @@ The address configured is not available (#{address})
       rescue Timeout::Error => ex
         STDERR.puts "Error: #{ex} while trying to send #{light}"
         retry unless attempts > tcp_client["attempts"]
-      rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH => ex
+      rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH, Errno::ENETUNREACH => ex
         wait = wait_for(attempts)
         STDERR.puts "Error: #{ex} while trying to send #{light}"
         STDERR.puts "Will wait for #{wait} seconds and try again..."

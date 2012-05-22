@@ -356,18 +356,22 @@ describe BuildStatusServer::Server do
           server.send(:notify, false)
         end
 
-        it "should not connect and retry 2 times" do
+        it "should not connect and retry 3 times" do
           STDERR.should_receive(:puts).with("Error: Connection refused while trying to send fail")
           STDERR.should_receive(:puts).with("Error: No route to host while trying to send fail")
+          STDERR.should_receive(:puts).with("Error: Network is unreachable while trying to send fail")
           STDERR.should_receive(:puts).with("Will wait for 2 seconds and try again...")
           STDERR.should_receive(:puts).with("Will wait for 4 seconds and try again...")
+          STDERR.should_receive(:puts).with("Will wait for 8 seconds and try again...")
 
           TCPSocket.should_receive(:new).with("host", "port").and_raise(Errno::ECONNREFUSED.new)
           TCPSocket.should_receive(:new).with("host", "port").and_raise(Errno::EHOSTUNREACH.new)
+          TCPSocket.should_receive(:new).with("host", "port").and_raise(Errno::ENETUNREACH.new)
           TCPSocket.should_receive(:new).with("host", "port").and_return(client)
 
           server.should_receive(:sleep).with(2)
           server.should_receive(:sleep).with(4)
+          server.should_receive(:sleep).with(8)
 
           client.should_receive(:print).with("GET fail HTTP/1.0\n\n")
 
