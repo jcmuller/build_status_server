@@ -5,8 +5,13 @@ require "timeout"
 require "yaml"
 
 module BuildStatusServer
-  autoload :CLI,     'build_status_server/cli'
-  autoload :Config,  'build_status_server/config'
-  autoload :Server,  'build_status_server/server'
-  autoload :VERSION, 'build_status_server/version'
+  autoload :CLI,         'build_status_server/cli'
+  autoload :Config,      'build_status_server/config'
+  autoload :HTTPServer,  'build_status_server/http_server'
+  autoload :Runner,      'build_status_server/runner'
+  autoload :Server,      'build_status_server/server'
+  autoload :Store,       'build_status_server/store'
+  autoload :TCPClient,   'build_status_server/tcp_client'
+  autoload :UDPServer,   'build_status_server/udp_server'
+  autoload :VERSION,     'build_status_server/version'
 end

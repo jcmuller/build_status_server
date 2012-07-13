@@ -3,7 +3,7 @@ require "build_status_server"
 require "tempfile"
 
 describe BuildStatusServer::Config do
-  let(:config) { BuildStatusServer::Config.new }
+  let(:config) { BuildStatusServer::Config.new({}, false) }
 
   describe "#load" do
     it "should call load_config_file with options passed in" do
@@ -68,7 +68,6 @@ describe BuildStatusServer::Config do
     end
 
     it "should return the default options if no default location is found" do
-      STDERR.should_receive(:puts)
       config_hash = config.send(:load_config_file)
       config_hash["udp_server"]["address"].should == '127.0.0.1'
       config_hash["verbose"].should == false

@@ -2,8 +2,8 @@ module BuildStatusServer
   class Config
     attr_reader :config
 
-    def initialize
-      @config = {}
+    def initialize(options = {}, test = false)
+      self.load(options) unless test
     end
 
     # This is responsible of loading the config object

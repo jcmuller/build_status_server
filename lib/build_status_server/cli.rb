@@ -16,7 +16,7 @@ module BuildStatusServer
         show_help_and_exit
       end
 
-      BuildStatusServer::Server.new(options).listen
+      BuildStatusServer::Runner.new(options).listen
     end
 
     private
