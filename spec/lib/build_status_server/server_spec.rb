@@ -2,7 +2,12 @@ require 'spec_helper'
 require 'build_status_server'
 
 describe BuildStatusServer::Server do
-  let(:server) { BuildStatusServer::Server.new }
+  let(:server) {
+    BuildStatusServer::Server.new(
+      BuildStatusServer::Config.new,
+      BuildStatusServer::Store.new,
+    )
+  }
 
   before do
     STDERR.should_receive(:puts)
