@@ -8,7 +8,9 @@
 require "simplecov"
 require 'simplecov-rcov'
 SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
-SimpleCov.start
+SimpleCov.start do
+  add_filter "vendor/bundler_gems" # Ignore gems
+end
 
 require "rspec/core"
 require "rspec/mocks"
