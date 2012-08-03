@@ -55,7 +55,7 @@ describe BuildStatusServer::Config do
 
     it "should throw an exception if the config file doesn't exist" do
       file_name = "/tmp/i_dont_exist.yml"
-      expect { config.send(:load_config_file, file_name) }.should raise_error RuntimeError, "Supplied config file (#{file_name}) doesn't seem to exist"
+      expect { config.send(:load_config_file, file_name) }.to raise_error RuntimeError, "Supplied config file (#{file_name}) doesn't seem to exist"
     end
 
     it "should throw an exception if the config file isn't a hash" do
@@ -64,7 +64,7 @@ describe BuildStatusServer::Config do
         f.puts "YADDA YADDA"
         file_name = f.path
       end
-      expect { config.send(:load_config_file, file_name) }.should raise_error RuntimeError, "This is an invalid configuration file!"
+      expect { config.send(:load_config_file, file_name) }.to raise_error RuntimeError, "This is an invalid configuration file!"
     end
 
     it "should return the default options if no default location is found" do
