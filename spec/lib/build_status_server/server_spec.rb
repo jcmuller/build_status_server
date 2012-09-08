@@ -319,12 +319,12 @@ describe BuildStatusServer::Server do
         end
 
         it "should send passing packet to tcp socket when status is true" do
-          client.should_receive(:print).with("GET pass HTTP/1.0\n\n")
+          client.should_receive(:print).with("GET pass HTTP/1.0\r\n\r\n")
           server.send(:notify, true)
         end
 
         it "should send failing packet to tcp socket when status is false" do
-          client.should_receive(:print).with("GET fail HTTP/1.0\n\n")
+          client.should_receive(:print).with("GET fail HTTP/1.0\r\n\r\n")
           server.send(:notify, false)
         end
       end
@@ -350,8 +350,8 @@ describe BuildStatusServer::Server do
         it "should time out and retry 2 times" do
           TCPSocket.should_receive(:new).exactly(3).with("host", "port").and_return(client)
           STDERR.should_receive(:puts).exactly(2).with("Error: Timeout::Error while trying to send fail")
-          client.should_receive(:print).exactly(2).with("GET fail HTTP/1.0\n\n").and_raise(Timeout::Error)
-          client.should_receive(:print).with("GET fail HTTP/1.0\n\n")
+          client.should_receive(:print).exactly(2).with("GET fail HTTP/1.0\r\n\r\n").and_raise(Timeout::Error)
+          client.should_receive(:print).with("GET fail HTTP/1.0\r\n\r\n")
 
           server.send(:notify, false)
         end
@@ -373,7 +373,7 @@ describe BuildStatusServer::Server do
           server.should_receive(:sleep).with(4)
           server.should_receive(:sleep).with(8)
 
-          client.should_receive(:print).with("GET fail HTTP/1.0\n\n")
+          client.should_receive(:print).with("GET fail HTTP/1.0\r\n\r\n")
 
           server.send(:notify, false)
         end
@@ -396,8 +396,8 @@ describe BuildStatusServer::Server do
         client.should_receive(:gets).and_return("answer")
         TCPSocket.should_receive(:new).exactly(3).with("host", "port").and_return(client)
         STDERR.should_receive(:puts).exactly(2).with("Error: Timeout::Error while trying to send fail")
-        client.should_receive(:print).exactly(2).with("GET fail HTTP/1.0\n\n").and_raise(Timeout::Error)
-        client.should_receive(:print).with("GET fail HTTP/1.0\n\n")
+        client.should_receive(:print).exactly(2).with("GET fail HTTP/1.0\r\n\r\n").and_raise(Timeout::Error)
+        client.should_receive(:print).with("GET fail HTTP/1.0\r\n\r\n")
 
         server.send(:notify, false)
       end

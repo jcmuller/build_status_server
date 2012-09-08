@@ -1,3 +1,3 @@
 module BuildStatusServer
-  VERSION = "0.15"
+  VERSION = "0.16"
 end

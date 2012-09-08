@@ -24,7 +24,7 @@ module BuildStatusServer
     private
 
     def process_loop
-      data, addr = udp_server.recvfrom(2048)
+      data, _ = udp_server.recvfrom(2048)
 
       if process_job(data)
         status = process_all_statuses
@@ -69,7 +69,7 @@ The address configured is not available (#{address})
     def process_job(data = "{}")
       job = begin
               JSON.parse(data)
-            rescue JSON::ParserError => ex
+            rescue JSON::ParserError
               STDERR.puts "Invalid JSON! (Or at least JSON wasn't able to parse it...)\nReceived: #{data}"
               return false
             end
@@ -144,7 +144,7 @@ The address configured is not available (#{address})
         timeout(5) do
           attempts += 1
           client = TCPSocket.new(tcp_client["host"], tcp_client["port"])
-          client.print "GET #{light} HTTP/1.0\n\n"
+          client.print "GET #{light} HTTP/1.0\r\n\r\n"
           answer = client.gets(nil)
           STDOUT.puts answer if config.verbose
         end
