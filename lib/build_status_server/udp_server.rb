@@ -2,7 +2,8 @@ module BuildStatusServer
   class UDPServer < Server
 
     def setup
-      address, port = config.udp_server["address"], config.udp_server["port"]
+      server_settings = config.udp_server
+      address, port = server_settings["address"], server_settings["port"]
       @server = UDPSocket.new
 
       begin
@@ -17,7 +18,7 @@ module BuildStatusServer
     end
 
     def process
-      data, addr = server.recvfrom(2048)
+      data, _ = server.recvfrom(2048)
 
       if process_job(data)
         status = store.summary_statuses
@@ -26,27 +27,22 @@ module BuildStatusServer
     end
 
     def process_job(data = "{}")
-      job = begin
-              JSON.parse(data)
-            rescue JSON::ParserError => ex
-              STDERR.puts "Invalid JSON! (Or at least JSON wasn't able to parse it...)\nReceived: #{data}"
-              return false
-            end
+      job = parse_data(data)
+      return false unless job
 
       build_name = job["name"]
 
-      unless should_process_build(build_name)
+      if !should_process_build(build_name)
         STDOUT.puts "Ignoring #{build_name} (#{config.mask["regex"]}--#{config.mask["policy"]})" if config.verbose
         return false
       end
 
-      if job.class != Hash or
-        job["build"].class != Hash
+      if job.class != Hash || job["build"].class != Hash
         STDERR.puts "Pinged with an invalid payload"
         return false
       end
 
-      phase  = job["build"]["phase"]
+      phase = job["build"]["phase"]
       status = job["build"]["status"]
 
       if phase == "FINISHED"
@@ -60,7 +56,19 @@ module BuildStatusServer
         STDOUT.puts "Started for #{build_name} on #{Time.now} [#{job_internals(job)}]" if config.verbose
       end
 
-      return false
+      false
+    end
+
+    def parse_data(data)
+      begin
+        JSON.parse(data)
+      rescue JSON::ParserError
+        STDERR.puts(<<-EOE)
+Invalid JSON! (Or at least our JSON parser wasn't able to parse it...)
+Received: #{data}
+        EOE
+        false
+      end
     end
 
     def job_internals(job)
