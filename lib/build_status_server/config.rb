@@ -2,8 +2,8 @@ module BuildStatusServer
   class Config
     attr_reader :config
 
-    def initialize(options = {}, test = false)
-      self.load(options) unless test
+    def initialize(options = {}, run_load = true)
+      self.load(options) if run_load
     end
 
     # This is responsible of loading the config object
@@ -55,7 +55,19 @@ module BuildStatusServer
         end
 
         if curated_file.nil?
-          STDERR.puts <<-EOT
+          show_config_file_suggestion
+
+          return YAML.load(get_example_config)
+        end
+      end
+
+      YAML.load_file(curated_file).tap do |config|
+        raise "This is an invalid configuration file!" unless config.class == Hash
+      end
+    end
+
+    def show_config_file_suggestion
+      STDERR.puts <<-EOT
 Looks like there isn't an available configuration file for this program.
 We're very diligently going to use some sensible defaults, but you're
 strongly recommended to create one in any of the following locations:
@@ -70,15 +82,7 @@ strongly recommended to create one in any of the following locations:
 Also, you can specify what configuration file to load by passing --config as an
 argument (see "build_status_server --help")
 
-          EOT
-
-          return YAML.load(get_example_config)
-        end
-      end
-
-      YAML.load_file(curated_file).tap do |config|
-        raise "This is an invalid configuration file!" unless config.class == Hash
-      end
+      EOT
     end
 
     def locations_to_try
