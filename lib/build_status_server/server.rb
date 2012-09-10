@@ -2,18 +2,18 @@ module BuildStatusServer
   class Server
     attr_reader :config, :server, :store
 
-    def initialize(config, store)
+    def initialize(config, store, run_setup = true)
       @config = config
       @store = store
-      setup
+      setup if run_setup
     end
 
     def setup
-      raise "You have to implement setup"
+      raise "You have to implement setup" if self.class != Server
     end
 
-    def run_loop
-      raise "You have to implement run_loop"
+    def process
+      raise "You have to implement process" if self.class != Server
     end
 
     def address_in_use_error(address, port)
@@ -33,5 +33,10 @@ The address configured is not available (#{address})
       exit
     end
 
+    def run_loop(run_forever = true)
+      while(run_forever)
+        process
+      end
+    end
   end
 end
