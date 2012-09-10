@@ -7,4 +7,3 @@ rvm:
   - jruby-19mode
   - jruby-head
   - ruby-head
-  - rbx-19mode
