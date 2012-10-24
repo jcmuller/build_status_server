@@ -12,22 +12,33 @@ module BuildStatusServer
     end
 
     def process
-      session = server.accept
-      status = store.summary_statuses
+      Thread.start(server.accept) do |session|
+        status = store.summary_statuses
 
-      session.print "HTTP/1.1 200/OK\r\nContent-type:text/html\r\n\r\n"
-      session.print <<-EOF
+        session.print headers
+        session.print body(status)
+        session.close
+
+      end
+    end
+
+    private
+
+    def headers
+      "HTTP/1.1 200/OK\r\nContent-type:text/html\r\n\r\n"
+    end
+
+    def body(status)
+      <<-EOF
 <html>
   <head>
-    <!meta http-equiv="refresh" content="5; url=http://#{config.tcp_server["address"]}:#{config.tcp_server["port"]}/">
-    <link rel='stylesheet' href='http://platform.assetspost.com/assets/groups/application.css'/>
+    <meta http-equiv="refresh" content="5; url=http://#{config.tcp_server["address"]}:#{config.tcp_server["port"]}/">
   </head>
   <body>
-    #{status}
+    Build is #{status ? "passing" : "failing"}
   </body>
 </html>
       EOF
-      session.close
     end
   end
 end
