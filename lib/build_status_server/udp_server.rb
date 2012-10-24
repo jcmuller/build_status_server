@@ -5,16 +5,12 @@ module BuildStatusServer
       server_settings = config.udp_server
       address, port = server_settings["address"], server_settings["port"]
       @server = UDPSocket.new
-
-      begin
-        server.bind(address, port)
-      rescue Errno::EADDRINUSE
-        address_in_use_error(address, port)
-      rescue Errno::EADDRNOTAVAIL, SocketError
-        address_not_available_error(address)
-      end
-
+      server.bind(address, port)
       STDOUT.puts "Listening on UDP #{address}:#{port}" if config.verbose
+    rescue Errno::EADDRINUSE
+      address_in_use_error(address, port)
+    rescue Errno::EADDRNOTAVAIL, SocketError
+      address_not_available_error(address)
     end
 
     def process
@@ -60,15 +56,13 @@ module BuildStatusServer
     end
 
     def parse_data(data)
-      begin
-        JSON.parse(data)
-      rescue JSON::ParserError
-        STDERR.puts(<<-EOE)
+      JSON.parse(data)
+    rescue JSON::ParserError
+      STDERR.puts(<<-EOE)
 Invalid JSON! (Or at least our JSON parser wasn't able to parse it...)
 Received: #{data}
-        EOE
-        false
-      end
+      EOE
+      false
     end
 
     def job_internals(job)

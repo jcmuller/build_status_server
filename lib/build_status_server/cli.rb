@@ -9,14 +9,11 @@ module BuildStatusServer
 
     def initialize
       set_program_name
-      begin
-        process_command_line_options
-      rescue GetoptLong::MissingArgument
-        puts
-        show_help_and_exit
-      end
-
+      process_command_line_options
       BuildStatusServer::Runner.new(options).listen
+    rescue GetoptLong::MissingArgument
+      puts
+      show_help_and_exit
     end
 
     private

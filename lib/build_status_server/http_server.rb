@@ -3,15 +3,12 @@ module BuildStatusServer
 
     def setup
       address, port = config.tcp_server["address"], config.tcp_server["port"]
-      begin
-        @server = TCPServer.new(address, port)
-      rescue Errno::EADDRINUSE
-        address_in_use_error(address, port)
-      rescue Errno::EADDRNOTAVAIL, SocketError
-        address_not_available_error(address)
-      end
-
+      @server = TCPServer.new(address, port)
       STDOUT.puts "Listening on TCP #{address}:#{port}" if config.verbose
+    rescue Errno::EADDRINUSE
+      address_in_use_error(address, port)
+    rescue Errno::EADDRNOTAVAIL, SocketError
+      address_not_available_error(address)
     end
 
     def process
