@@ -32,5 +32,6 @@ Notification Plugin)) and an Arduino powered Traffic Light controller
   s.add_development_dependency("sinatra")
 
   s.add_dependency("json")
+  s.add_dependency("command_line_helper")
 end
 

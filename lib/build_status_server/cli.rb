@@ -1,7 +1,10 @@
 require 'getoptlong'
+require 'command_line_helper'
 
 module BuildStatusServer
   class CLI
+    include CommandLineHelper::HelpText
+
     attr_reader :options
 
     def initialize
@@ -17,17 +20,19 @@ module BuildStatusServer
 
     private
 
+    def options_possible
+      [
+        ['--config',  '-c', GetoptLong::REQUIRED_ARGUMENT, 'Override the configuration file location'],
+        ['--help',    '-h', GetoptLong::NO_ARGUMENT, 'Show this text'],
+        ['--verbose', '-v', GetoptLong::NO_ARGUMENT, ''],
+        ['--version', '-V', GetoptLong::NO_ARGUMENT, 'Show version info'],
+      ]
+    end
+
     def process_command_line_options
       @options = {}
 
-      possible_arguments = [
-        ['--config',      '-c', GetoptLong::REQUIRED_ARGUMENT],
-        ['--help',        '-h', GetoptLong::NO_ARGUMENT],
-        ['--verbose',     '-v', GetoptLong::NO_ARGUMENT],
-        ['--version',     '-V', GetoptLong::NO_ARGUMENT],
-      ]
-
-      GetoptLong.new(*possible_arguments).each do |opt, arg|
+      cli_options.each do |opt, arg|
         case opt
         when '--help'
           show_help_and_exit
@@ -36,13 +41,17 @@ module BuildStatusServer
         when '--verbose'
           options[:verbose] = true
         when '--version'
-          puts get_version
+          puts version_info
           exit
         end
       end
     end
 
-    def get_version
+    def cli_options
+      @cli_options ||= GetoptLong.new(*options_possible.map{ |o| o.first(3) })
+    end
+
+    def version_info
       <<-EOV
 #{get_program_name}, version #{BuildStatusServer::VERSION}
 
@@ -52,17 +61,7 @@ http://github.com/jcmuller/build_status_server
     end
 
     def show_help_and_exit
-      puts <<-EOT
-Usage: #{get_program_name} [options]
-
-Options:
-  -c, --config CONFIGURATION  Specify what configuration file to load
-  -h, --help                  Display this very helpful text
-  -v, --verbose               Be more informative about what's going on
-  -V, --version               Print out current version info
-
-#{get_version}
-      EOT
+      STDOUT.puts help_info
       exit
     end
 
