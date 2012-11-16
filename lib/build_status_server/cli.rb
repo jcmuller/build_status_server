@@ -8,6 +8,7 @@ module BuildStatusServer
     attr_reader :options
 
     def initialize
+      set_program_name
       begin
         process_command_line_options
       rescue GetoptLong::MissingArgument
@@ -53,7 +54,7 @@ module BuildStatusServer
 
     def version_info
       <<-EOV
-#{get_program_name}, version #{BuildStatusServer::VERSION}
+#{program_name}, version #{VERSION}
 
 (c) Juan C. Muller, 2012
 http://github.com/jcmuller/build_status_server
@@ -65,8 +66,8 @@ http://github.com/jcmuller/build_status_server
       exit
     end
 
-    def get_program_name
-      File.basename($0)
+    def set_program_name
+      $0 = "#{File.basename($0)} (#{VERSION})"
     end
   end
 end

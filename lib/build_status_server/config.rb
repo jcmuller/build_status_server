@@ -68,7 +68,7 @@ strongly recommended to create one in any of the following locations:
 #{get_example_config}
 
 Also, you can specify what configuration file to load by passing --config as an
-argument (see "#{File.basename($0)} --help")
+argument (see "build_status_server --help")
 
           EOT
 
