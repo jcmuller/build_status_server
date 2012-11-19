@@ -103,7 +103,7 @@ describe BuildStatusServer::UDPServer do
     end
   end
 
-  describe "#process_job", :pending => true do
+  describe "#process_job", pending: true do
     it "returns false if should_process_build returns false" do
       server.should_receive(:should_process_build).and_return(false)
       server.send(:process_job).should be_false

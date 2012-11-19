@@ -20,4 +20,4 @@ task :clean do
 end
 
 desc "Run rspec by default"
-task :default => :spec
+task default: :spec

@@ -6,7 +6,7 @@ describe BuildStatusServer::Config do
 
   describe "#load" do
     it "should call load_config_file with options passed in" do
-      options = {:config => nil}
+      options = { config: nil }
       subject.should_receive(:load_config_file).with(options[:config])
       subject.load(options)
     end
