@@ -94,7 +94,7 @@ describe BuildStatusServer::Config do
     end
 
     it "should not respond to methods named after elements that don't exist" do
-      expect{ config.blah }.to raise_error NoMethodError
+      expect{ subject.blah }.to raise_error NoMethodError
     end
   end
 end
