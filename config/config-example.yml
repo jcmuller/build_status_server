@@ -1,6 +1,9 @@
     udp_server:
       address: 127.0.0.1
       port: 1234
+    tcp_server:
+      address: 127.0.0.1
+      port: 2222
     tcp_client:
       host: 127.0.0.1
       port: 4567

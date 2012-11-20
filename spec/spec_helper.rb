@@ -10,10 +10,13 @@ require 'simplecov-rcov'
 SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
 SimpleCov.start do
   add_filter "vendor/bundler_gems" # Ignore gems
+  add_filter "spec"
 end
 
 require "rspec/core"
 require "rspec/mocks"
+
+require "build_status_server"
 
 RSpec.configure do |config|
   config.treat_symbols_as_metadata_keys_with_true_values = true
