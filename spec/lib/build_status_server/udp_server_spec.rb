@@ -274,6 +274,98 @@ describe BuildStatusServer::UDPServer do
     end
   end
 
+  describe "#process_job" do
+    let(:build) { { "phase" => "phase", "status" => "status" } }
+
+    before do
+      subject.stub(:parse_data).and_return({ "name" => "name", "build" => build })
+      subject.stub(:should_process_build).and_return(true)
+    end
+
+    it { subject.process_job.should be_false }
+
+    it "should return false" do
+      subject.should_receive(:should_process_build).and_return(false)
+      subject.process_job.should be_false
+    end
+
+    it "should let us know that it's ignoring the build" do
+      config.should_receive(:mask).twice.and_return({ "regex" => "regex", "policy" => "policy" })
+      subject.should_receive(:should_process_build).and_return(false)
+      config.should_receive(:verbose).and_return(true)
+
+      STDOUT.should_receive(:puts).with("Ignoring name (regex--policy)")
+
+      subject.process_job
+    end
+
+    it "should let us know that the build started if verbose" do
+      config.stub(:verbose).and_return(true)
+      Time.should_receive(:now).and_return("now")
+      subject.should_receive(:job_internals).and_return("details")
+
+      STDOUT.should_receive(:puts).with("Started for name on now [details]")
+
+      subject.process_job
+    end
+
+    context "when job isn't a hash" do
+      before do
+        subject.should_receive(:parse_data).and_return([])
+      end
+
+      it "should return false" do
+        subject.process_job.should be_false
+      end
+
+      it "should let us know if verbose" do
+        STDERR.should_receive(:puts).with("Pinged with an invalid payload")
+        subject.process_job
+      end
+    end
+
+    context "when phase is finished" do
+      before do
+        build["phase"] = "FINISHED"
+        store.stub(:[]=)
+      end
+
+      it "should let us know that we got a finished packet if verbose" do
+        config.stub(:verbose).and_return(true)
+        Time.should_receive(:now).and_return("now")
+        subject.should_receive(:job_internals).and_return("details")
+
+        STDOUT.should_receive(:puts).with("Got status for name on now [details]")
+
+        subject.process_job
+      end
+
+      it "should let store know about the build when build is a success" do
+        build["status"] = "SUCCESS"
+        store.should_receive(:[]=).with("name", "SUCCESS")
+
+        subject.process_job
+      end
+
+      it "should let store know about the build when build is a faliure" do
+        build["status"] = "FAILURE"
+        store.should_receive(:[]=).with("name", "FAILURE")
+
+        subject.process_job
+      end
+
+      it "should return true when build is successful" do
+        build["status"] = "SUCCESS"
+        subject.process_job.should be_true
+      end
+
+      it "should return true when build is failing" do
+        build["status"] = "FAILURE"
+        subject.process_job.should be_true
+      end
+    end
+  end
+
 end
 
 # vim:set foldmethod=syntax foldlevel=1:

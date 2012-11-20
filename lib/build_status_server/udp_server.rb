@@ -26,15 +26,15 @@ module BuildStatusServer
       job = parse_data(data)
       return false unless job
 
+      if job.class != Hash || job["build"].class != Hash
+        STDERR.puts "Pinged with an invalid payload"
+        return false
+      end
+
       build_name = job["name"]
 
       if !should_process_build(build_name)
         STDOUT.puts "Ignoring #{build_name} (#{config.mask["regex"]}--#{config.mask["policy"]})" if config.verbose
-        return false
-      end
-
-      if job.class != Hash || job["build"].class != Hash
-        STDERR.puts "Pinged with an invalid payload"
         return false
       end
 
