@@ -7,16 +7,25 @@ module BuildStatusServer
 
     attr_reader :options
 
-    def initialize
-      set_program_name
-      begin
-        process_command_line_options
-      rescue GetoptLong::MissingArgument
-        puts
-        show_help_and_exit
-      end
+    def self.run
+      self.new.setup_and_run
+    end
 
-      BuildStatusServer::Server.new(options).listen
+    def setup_and_run
+      setup
+      run
+    end
+
+    def setup
+      set_program_name
+      process_command_line_options
+    rescue GetoptLong::MissingArgument, GetoptLong::InvalidOption
+      puts
+      show_help_and_exit
+    end
+
+    def run
+      BuildStatusServer::Runner.new(options).listen
     end
 
     private
@@ -54,11 +63,15 @@ module BuildStatusServer
 
     def version_info
       <<-EOV
-#{program_name}, version #{VERSION}
+#{program_name}, version #{version}
 
 (c) Juan C. Muller, 2012
 http://github.com/jcmuller/build_status_server
   EOV
+    end
+
+    def version
+      VERSION
     end
 
     def show_help_and_exit
@@ -67,7 +80,7 @@ http://github.com/jcmuller/build_status_server
     end
 
     def set_program_name
-      $0 = "#{File.basename($0)} (#{VERSION})"
+      $0 = "#{File.basename($0)} (#{version})"
     end
   end
 end

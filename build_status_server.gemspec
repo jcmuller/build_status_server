@@ -27,11 +27,14 @@ Notification Plugin)) and an Arduino powered Traffic Light controller
   s.homepage   = "http://github.com/jcmuller/build_status_server"
   s.test_files = Dir["spec/**/*_spec.rb"]
 
-  s.add_development_dependency("rake")
+  s.add_development_dependency("guard")
+  s.add_development_dependency("guard-bundler")
+  s.add_development_dependency("guard-rspec")
   s.add_development_dependency("pry-debugger")
+  s.add_development_dependency("rake")
   s.add_development_dependency("sinatra")
+  s.add_development_dependency("terminal-notifier-guard")
 
-  s.add_dependency("json")
   s.add_dependency("command_line_helper")
+  s.add_dependency("json")
 end
-
