@@ -18,14 +18,15 @@ module BuildStatusServer
         http_server.run_loop
       end
 
-      while true
+      while run_forever
         # Do absolutely nothing. Work is done by child threads
         sleep 0.1
       end
     rescue Interrupt
       puts "Killing threads..."
-      udp_thread.exit
-      tcp_thread.exit
+      udp_thread.send(:exit)
+      tcp_thread.send(:exit)
     end
+
   end
 end
