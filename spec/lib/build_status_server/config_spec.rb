@@ -97,4 +97,10 @@ describe BuildStatusServer::Config do
       expect{ subject.blah }.to raise_error NoMethodError
     end
   end
+
+  describe "#respond_to_missing" do
+    before { subject.send(:import_config, "foo" => "bar") }
+    it { should be_respond_to_missing(:foo) }
+    it { should_not be_respond_to_missing(:bar) }
+  end
 end

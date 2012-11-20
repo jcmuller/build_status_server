@@ -12,15 +12,6 @@ module BuildStatusServer
       import_config(config, options)
     end
 
-    def method_missing(meth, *args, &block)
-      return config[meth.to_s] if config.has_key?(meth.to_s)
-      super
-    end
-
-    def respond_to?(meth)
-      config.has_key?(meth.to_s) || super
-    end
-
     def store_file
       return File.expand_path(".", store["filename"]) if store
       nil
@@ -97,6 +88,15 @@ argument (see "build_status_server --help")
       filename = "#{File.dirname(File.expand_path(__FILE__))}/../../config/config-example.yml"
       File.open(filename).read
     end
+
+    def method_missing(method_name, *args, &block)
+      config.has_key?(method_name.to_s) ? config[method_name.to_s] : super
+    end
+
+    def respond_to_missing?(method_name)
+      config.has_key?(method_name.to_s)
+    end
+
   end
 end
 
