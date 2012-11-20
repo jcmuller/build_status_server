@@ -1,19 +1,17 @@
 module BuildStatusServer
   class Store
-    attr_reader :store, :config
-
-    def initialize(options = {})
-      @config = Config.new(options)
+    def initialize(config, options = {})
+      @config = config
       read
     end
 
     def read
       @store = begin
-                 YAML.load_file(config.store_file)
+                 YAML.load_file(store_file)
                rescue
                  {}
                end
-      @store = {} unless store.class == Hash
+      @store = {} unless @store.class == Hash
     end
 
     def []=(name, status)
@@ -23,22 +21,24 @@ module BuildStatusServer
     end
 
     def write
-      File.open(config.store_file, "w") do |file|
+      File.open(store_file, "w") do |file|
         file.flock(File::LOCK_EX)
         YAML.dump(store, file)
         file.flock(File::LOCK_UN)
       end
     end
 
-    def summary_statuses
+    def passing_builds?
       read
-      pass = true
+      store.values.select{ |val| val !~ %r{(?:pass|SUCCESS)} }.empty?
+    end
 
-      store.values.each do |val|
-        pass &&= (val == "pass" || val == "SUCCESS")
-      end
+    private
 
-      pass
+    attr_reader :config, :store
+
+    def store_file
+      @store_file ||= config.store_file
     end
   end
 end

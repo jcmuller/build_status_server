@@ -4,7 +4,7 @@ module BuildStatusServer
 
     def initialize(options = {})
       @config = Config.new(options)
-      @store = Store.new(options)
+      @store = Store.new(@config, options)
     end
 
     def listen(run_forever = true)

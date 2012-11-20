@@ -17,7 +17,7 @@ module BuildStatusServer
       data, _ = server.recvfrom(2048)
 
       if process_job(data)
-        status = store.summary_statuses
+        status = store.passing_builds?
         TCPClient.new(config).notify(status)
       end
     end

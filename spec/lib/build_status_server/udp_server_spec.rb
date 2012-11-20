@@ -85,9 +85,9 @@ describe BuildStatusServer::UDPServer do
     context "should process_job with data" do
       it "when true" do
         subject.should_receive(:process_job).and_return(true)
-        store.should_receive(:summary_statuses).and_return("summary_statuses")
+        store.should_receive(:passing_builds?).and_return("passing_builds?")
         tcp_client = mock
-        tcp_client.should_receive(:notify).with("summary_statuses")
+        tcp_client.should_receive(:notify).with("passing_builds?")
         BuildStatusServer::TCPClient.should_receive(:new).and_return(tcp_client)
 
         subject.process
@@ -95,7 +95,7 @@ describe BuildStatusServer::UDPServer do
 
       it "when false" do
         subject.should_receive(:process_job).and_return(false)
-        store.should_not_receive(:summary_statuses)
+        store.should_not_receive(:passing_builds?)
         BuildStatusServer::TCPClient.should_not_receive(:new)
 
         subject.process

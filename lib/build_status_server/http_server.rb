@@ -13,7 +13,7 @@ module BuildStatusServer
 
     def process
       Thread.start(server.accept) do |session|
-        status = store.summary_statuses
+        status = store.passing_builds?
 
         session.print headers
         session.print body(status)
