@@ -12,33 +12,38 @@ module BuildStatusServer
     end
 
     def process
-      Thread.start(server.accept) do |session|
-        status = store.passing_builds?
-
-        session.print headers
-        session.print body(status)
-        session.close
-
+      Thread.start(server.accept) do |request|
+        process_request(request)
       end
     end
 
     private
 
+    def process_request(request)
+      request.print headers
+      request.print body
+      request.close
+    end
+
     def headers
       "HTTP/1.1 200/OK\r\nContent-type:text/html\r\n\r\n"
     end
 
-    def body(status)
+    def body
       <<-EOF
 <html>
   <head>
     <meta http-equiv="refresh" content="5; url=http://#{config.tcp_server["address"]}:#{config.tcp_server["port"]}/">
   </head>
   <body>
-    Build is #{status ? "passing" : "failing"}
+    Build is #{build_status}
   </body>
 </html>
       EOF
+    end
+
+    def build_status
+      store.passing_builds? ? "passing" : "failing"
     end
   end
 end
