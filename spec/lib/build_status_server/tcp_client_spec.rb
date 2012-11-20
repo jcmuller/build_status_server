@@ -4,6 +4,10 @@ describe BuildStatusServer::TCPClient do
   let(:config) { mock }
   subject { described_class.new(config) }
 
+  before do
+    STDERR.stub(:puts)
+  end
+
   describe "#notify" do
     let(:client) { mock(:client) }
 
@@ -83,6 +87,27 @@ describe BuildStatusServer::TCPClient do
 
         subject.send(:notify, false)
       end
+
+      it "just output when other kinds of errors" do
+        TCPSocket.should_receive(:new).and_raise(StandardError)
+
+        STDERR.should_receive(:puts).with(
+          "There was an error, but we don't know how to handle it: StandardError"
+        )
+
+        subject.send(:notify, false)
+      end
+
+      it "client must close" do
+        client = mock
+        TCPSocket.should_receive(:new).and_return(client)
+
+        client.should_receive(:print).and_raise(StandardError)
+
+        client.should_receive(:close)
+
+        subject.send(:notify, false)
+      end
     end
 
     it "should gracefully recover if config doesn't have attempts configured" do
@@ -92,10 +117,10 @@ describe BuildStatusServer::TCPClient do
         "port" => "port"
       }
 
-      config.should_receive(:tcp_client).and_return(options)
+      config.should_receive(:tcp_client).at_least(1).times.and_return(options)
       config.should_receive(:verbose).and_return(false)
 
-      client.should_receive(:close)
+      client.should_receive(:close).at_least(1).times.and_return(options)
 
       client.should_receive(:gets).and_return("answer")
       TCPSocket.should_receive(:new).exactly(3).with("host", "port").and_return(client)
