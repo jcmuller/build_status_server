@@ -29,6 +29,7 @@ Notification Plugin)) and an Arduino powered Traffic Light controller
 
   s.add_development_dependency("guard")
   s.add_development_dependency("guard-bundler")
+  s.add_development_dependency("guard-ctags-bundler")
   s.add_development_dependency("guard-rspec")
   s.add_development_dependency("pry-debugger")
   s.add_development_dependency("rake")
