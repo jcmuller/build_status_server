@@ -10,8 +10,8 @@ require "simplecov"
 require 'simplecov-rcov'
 
 SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
-	  SimpleCov::Formatter::RcovFormatter,
-	  Coveralls::SimpleCov::Formatter
+  SimpleCov::Formatter::RcovFormatter,
+  Coveralls::SimpleCov::Formatter
 ]
 
 SimpleCov.start do
