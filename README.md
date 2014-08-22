@@ -1,7 +1,7 @@
 # Build Notifier
 [![Build Status](https://travis-ci.org/jcmuller/build_status_server.svg?branch=master)](https://travis-ci.org/jcmuller/build_status_server)
 [![Dependency Status](https://gemnasium.com/jcmuller/build_status_server.png "Dependency Status")](https://gemnasium.com/jcmuller/build_status_server)
-[![Code Climate](https://codeclimate.com/github/jcmuller/build_status_server.png)](https://codeclimate.com/github/jcmuller/build_status_server)
+[![Code Climate](https://codeclimate.com/github/jcmuller/build_status_server/badges/gpa.svg)](https://codeclimate.com/github/jcmuller/build_status_server)
 [![Coverage Status](https://img.shields.io/coveralls/jcmuller/build_status_server.svg)](https://coveralls.io/r/jcmuller/build_status_server?branch=master)
 
 This utility is part of an XFD (eXtreme Feedback Device) solution designed and
