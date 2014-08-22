@@ -7,6 +7,7 @@ group :test do
   #gem "ci_reporter"
   gem "simplecov", :require => false
   gem "simplecov-rcov"
+  gem "coveralls"
 end
 
 group :development, :test do
