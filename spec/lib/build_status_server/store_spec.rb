@@ -54,7 +54,7 @@ describe BuildStatusServer::Store do
 
       subject.should_receive(:store).and_return("store")
 
-      file = mock
+      file = double
       file.should_receive(:flock).with(File::LOCK_EX)
       file.should_receive(:flock).with(File::LOCK_UN)
 
@@ -81,7 +81,7 @@ describe BuildStatusServer::Store do
 
   describe "#passing_builds?" do
     let(:values) { [] }
-    let(:store) { mock(values: values) }
+    let(:store) { double(values: values) }
 
     before do
       described_class.any_instance.stub(:read)

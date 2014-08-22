@@ -93,10 +93,9 @@ argument (see "build_status_server --help")
       config.has_key?(method_name.to_s) ? config[method_name.to_s] : super
     end
 
-    def respond_to_missing?(method_name)
+    def respond_to_missing?(method_name, *args)
       config.has_key?(method_name.to_s)
     end
 
   end
 end
-

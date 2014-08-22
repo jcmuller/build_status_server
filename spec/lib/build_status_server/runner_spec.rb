@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 describe BuildStatusServer::Runner do
-  let(:config) { mock }
-  let(:store) { mock }
-  let(:udp_server) { mock(run_loop: true) }
-  let(:http_server) { mock(run_loop: true) }
+  let(:config) { double }
+  let(:store) { double }
+  let(:udp_server) { double(run_loop: true) }
+  let(:http_server) { double(run_loop: true) }
 
   before do
     BuildStatusServer::Config.stub(:new).and_return(config)
@@ -31,7 +31,7 @@ describe BuildStatusServer::Runner do
     end
 
     it "should kill udp_thread on exit" do
-      udp_thread = mock
+      udp_thread = double
 
       http_server.should_receive(:run_loop).and_raise(Interrupt)
 

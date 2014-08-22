@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe BuildStatusServer::UDPServer do
   let(:config) {
-    mock(
+    double(
       udp_server: {
         "address" => "address",
         "port" => "port"
@@ -10,7 +10,7 @@ describe BuildStatusServer::UDPServer do
       verbose: false
     )
   }
-  let(:store) { mock }
+  let(:store) { double }
 
   subject { described_class.new(config, store, false) }
 
@@ -21,7 +21,7 @@ describe BuildStatusServer::UDPServer do
   describe "#setup" do
     it "should instantiate an UDP Socket" do
       config.should_receive(:udp_server).and_return({"address" => "address", "port" => "port"})
-      socket = mock
+      socket = double
       UDPSocket.should_receive(:new).and_return(socket)
       socket.stub(:bind)
 
@@ -30,7 +30,7 @@ describe BuildStatusServer::UDPServer do
 
     it "should bind the address and port to the socket" do
       config.stub(:udp_server).and_return({"address" => "address", "port" => "port"})
-      socket = mock
+      socket = double
       UDPSocket.stub(:new).and_return(socket)
       socket.should_receive(:bind).with("address", "port")
 
@@ -40,7 +40,7 @@ describe BuildStatusServer::UDPServer do
     it "should let me know that UDP is listening" do
       config.should_receive(:verbose).and_return(true)
       config.stub(:udp_server).and_return({"address" => "address", "port" => "port"})
-      socket = mock
+      socket = double
       UDPSocket.stub(:new).and_return(socket)
       socket.stub(:bind).with("address", "port")
 
@@ -50,7 +50,7 @@ describe BuildStatusServer::UDPServer do
     end
 
     it "should call address_in_use_error on Errno::EADDRINUSE" do
-      socket = mock
+      socket = double
       socket.should_receive(:bind).and_raise(Errno::EADDRINUSE)
       UDPSocket.stub(:new).and_return(socket)
       subject.should_receive(:address_in_use_error)
@@ -59,7 +59,7 @@ describe BuildStatusServer::UDPServer do
     end
 
     it "should call address_not_available_error on Errno::EADDRNOTAVAIL" do
-      socket = mock
+      socket = double
       socket.should_receive(:bind).and_raise(Errno::EADDRNOTAVAIL)
       UDPSocket.stub(:new).and_return(socket)
       subject.should_receive(:address_not_available_error)
@@ -69,7 +69,7 @@ describe BuildStatusServer::UDPServer do
   end
 
   describe "#process" do
-    let(:server) { mock( recvfrom: ["a piece of", "data"]) }
+    let(:server) { double( recvfrom: ["a piece of", "data"]) }
 
     before do
       subject.stub(:server).and_return(server)
@@ -86,7 +86,7 @@ describe BuildStatusServer::UDPServer do
       it "when true" do
         subject.should_receive(:process_job).and_return(true)
         store.should_receive(:passing_builds?).and_return("passing_builds?")
-        tcp_client = mock
+        tcp_client = double
         tcp_client.should_receive(:notify).with("passing_builds?")
         BuildStatusServer::TCPClient.should_receive(:new).and_return(tcp_client)
 
@@ -106,7 +106,7 @@ describe BuildStatusServer::UDPServer do
   describe "#process_job", pending: true do
     it "returns false if should_process_build returns false" do
       server.should_receive(:should_process_build).and_return(false)
-      server.send(:process_job).should be_false
+      server.send(:process_job).should eq false
     end
 
     it "doesn't die if invalid JSON is passed in" do
@@ -118,7 +118,7 @@ describe BuildStatusServer::UDPServer do
       server.should_receive(:should_process_build).and_return(true)
       JSON.should_receive(:parse).and_return({"build" => "Not a hash!"})
       STDERR.should_receive(:puts).with("Pinged with an invalid payload")
-      server.send(:process_job).should be_false
+      server.send(:process_job).should eq false
     end
 
     it "returns false and says that the we got the job started when phase is FINISHED but status isn't success nor failure" do
@@ -130,7 +130,7 @@ describe BuildStatusServer::UDPServer do
       })
       Time.should_receive(:now).and_return("this is the time")
       STDOUT.should_receive(:puts).with('Got some status for name on this is the time [build=>number, status=>some status]')
-      server.send(:process_job).should be_false
+      server.send(:process_job).should eq false
     end
 
     it "returns false and says that the job started when the phase isn't finished" do
@@ -142,7 +142,7 @@ describe BuildStatusServer::UDPServer do
       })
       Time.should_receive(:now).and_return("this is the time")
       STDOUT.should_receive(:puts).with("Started for name on this is the time [build=>number, status=>some status]")
-      server.send(:process_job).should be_false
+      server.send(:process_job).should eq false
     end
 
     context "phase is FINISHED and status is either SUCCESS or FAILURE" do
@@ -161,7 +161,7 @@ describe BuildStatusServer::UDPServer do
         })
         STDOUT.should_receive(:puts).with("Got SUCCESS for name on this is the time [build=>number, status=>SUCCESS]")
 
-        server.send(:process_job).should be_true
+        server.send(:process_job).should eq true
       end
 
       it "should return true and write yaml file when phase is FINISHED and status is FAILURE" do
@@ -171,7 +171,7 @@ describe BuildStatusServer::UDPServer do
         })
         STDOUT.should_receive(:puts).with("Got FAILURE for name on this is the time [build=>number, status=>FAILURE]")
 
-        server.send(:process_job).should be_true
+        server.send(:process_job).should eq true
       end
     end
   end
@@ -180,14 +180,13 @@ describe BuildStatusServer::UDPServer do
     it "should call JSON.parse" do
       JSON.should_receive(:parse).with("{a: 'b'}").and_return({ 'a' => 'b' })
       response = subject.parse_data("{a: 'b'}")
-      response.should be_true
       response.should == { 'a' => 'b' }
     end
 
     it "should print error on JSON::ParserError" do
       JSON.should_receive(:parse).with("{invalid}").and_raise(JSON::ParserError)
       STDERR.should_receive(:puts).with("Invalid JSON! (Or at least our JSON parser wasn't able to parse it...)\nReceived: {invalid}\n")
-      subject.parse_data("{invalid}").should be_false
+      subject.parse_data("{invalid}").should eq false
     end
   end
 
@@ -196,68 +195,68 @@ describe BuildStatusServer::UDPServer do
 
       context "when policy is include" do
         before do
-          config.stub!(:mask).and_return({"policy" => "include", "regex" => %r{.*(?:master).*}})
+          config.stub(:mask).and_return({"policy" => "include", "regex" => %r{.*(?:master).*}})
         end
 
         it "ignores builds if mask doesn't match build name" do
-          subject.send(:should_process_build, "blah-development").should be_false
+          subject.send(:should_process_build, "blah-development").should eq false
         end
 
         it "processes builds if mask matches build name" do
-          subject.send(:should_process_build, "blah-master").should be_true
+          subject.send(:should_process_build, "blah-master").should eq true
         end
       end
 
       context "when policy is exclude" do
         before do
-          config.stub!(:mask).and_return({"policy" => "exclude", "regex" => %r{.*(?:master).*}})
+          config.stub(:mask).and_return({"policy" => "exclude", "regex" => %r{.*(?:master).*}})
         end
 
         it "ignores builds if mask matches build name" do
-          subject.send(:should_process_build, "blah-master").should be_false
+          subject.send(:should_process_build, "blah-master").should eq false
         end
 
         it "processes builds if mask doesn't match build name" do
-          subject.send(:should_process_build, "blah-development").should be_true
+          subject.send(:should_process_build, "blah-development").should eq true
         end
       end
 
       context "when policy is undefined it defaults to ignore" do
         before do
-          config.stub!(:mask).and_return({"policy" => nil, "regex" => /.*(?:master).*/})
+          config.stub(:mask).and_return({"policy" => nil, "regex" => /.*(?:master).*/})
         end
 
         it "ignores builds if mask matches build name" do
-          subject.send(:should_process_build, "blah-master").should be_false
+          subject.send(:should_process_build, "blah-master").should eq false
         end
 
         it "processes builds if mask doesn't match build name" do
-          subject.send(:should_process_build, "blah-development").should be_true
+          subject.send(:should_process_build, "blah-development").should eq true
         end
       end
 
       context "when policy is unexpected it defaults to ignore" do
         before do
-          config.stub!(:mask).and_return({"policy" => "trash", "regex" => /.*(?:master).*/})
+          config.stub(:mask).and_return({"policy" => "trash", "regex" => /.*(?:master).*/})
         end
 
         it "ignores builds if mask matches build name" do
-          subject.send(:should_process_build, "blah-master").should be_false
+          subject.send(:should_process_build, "blah-master").should eq false
         end
 
         it "processes builds if mask doesn't match build name" do
-          subject.send(:should_process_build, "blah-development").should be_true
+          subject.send(:should_process_build, "blah-development").should eq true
         end
       end
     end
 
     context "when mask regex doesn't" do
       before do
-        config.stub!(:mask).and_return({"policy" => "include", "regex" => nil})
+        config.stub(:mask).and_return({"policy" => "include", "regex" => nil})
       end
 
       it "should process all jobs" do
-        subject.send(:should_process_build, "blah-development").should be_true
+        subject.send(:should_process_build, "blah-development").should eq true
       end
     end
   end
@@ -282,11 +281,11 @@ describe BuildStatusServer::UDPServer do
       subject.stub(:should_process_build).and_return(true)
     end
 
-    it { subject.process_job.should be_false }
+    it { subject.process_job.should eq false }
 
     it "should return false" do
       subject.should_receive(:should_process_build).and_return(false)
-      subject.process_job.should be_false
+      subject.process_job.should eq false
     end
 
     it "should let us know that it's ignoring the build" do
@@ -315,7 +314,7 @@ describe BuildStatusServer::UDPServer do
       end
 
       it "should return false" do
-        subject.process_job.should be_false
+        subject.process_job.should eq false
       end
 
       it "should let us know if verbose" do
@@ -356,12 +355,12 @@ describe BuildStatusServer::UDPServer do
 
       it "should return true when build is successful" do
         build["status"] = "SUCCESS"
-        subject.process_job.should be_true
+        subject.process_job.should eq true
       end
 
       it "should return true when build is failing" do
         build["status"] = "FAILURE"
-        subject.process_job.should be_true
+        subject.process_job.should eq true
       end
     end
   end

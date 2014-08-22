@@ -4,8 +4,8 @@ class SomeClassDefinedInServer
 end
 
 describe BuildStatusServer::Server do
-  let(:config) { mock }
-  let(:store) { mock }
+  let(:config) { double }
+  let(:store) { double }
 
   subject { described_class.new(config, store) }
 

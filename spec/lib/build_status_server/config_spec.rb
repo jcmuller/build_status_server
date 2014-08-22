@@ -2,7 +2,7 @@ require "spec_helper"
 require "tempfile"
 
 describe BuildStatusServer::Config do
-  subject { described_class.new({}, false) }
+  subject(:config) { described_class.new({}, false) }
 
   describe "#load" do
     it "should call load_config_file with options passed in" do
@@ -46,7 +46,7 @@ describe BuildStatusServer::Config do
         file_name = f.path
       end
 
-      subject.stub!(:locations_to_try).and_return([file_name])
+      subject.stub(:locations_to_try).and_return([file_name])
       subject.send(:load_config_file).should == {
         "key" => "value",
         "key2" => "value2"
@@ -76,13 +76,17 @@ describe BuildStatusServer::Config do
   end
 
   describe "#store_file" do
+    before do
+      subject.stub(:config).and_return({})
+    end
+
     it "returns the store file configured" do
-      subject.stub!(:store).and_return("filename" => "/tmp/build_result.yml")
+      subject.stub(:store).and_return("filename" => "/tmp/build_result.yml")
       subject.store_file.should == "/tmp/build_result.yml"
     end
 
     it "returns nil if config doesn't have store option" do
-      subject.stub!(:store).and_return(nil)
+      subject.stub(:store).and_return(nil)
       subject.store_file.should be_nil
     end
   end
@@ -99,8 +103,8 @@ describe BuildStatusServer::Config do
   end
 
   describe "#respond_to_missing" do
-    before { subject.send(:import_config, "foo" => "bar") }
-    it { should be_respond_to_missing(:foo) }
-    it { should_not be_respond_to_missing(:bar) }
+    before { config.send(:import_config, "foo" => "bar") }
+    it { expect(subject.send(:respond_to_missing?, :foo)).to eq true }
+    it { expect(subject.send(:respond_to_missing?, :bar)).to eq false }
   end
 end

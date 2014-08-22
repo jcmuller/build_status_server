@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe BuildStatusServer::TCPClient do
-  let(:config) { mock }
+  let(:config) { double }
   subject { described_class.new(config) }
 
   before do
@@ -9,7 +9,7 @@ describe BuildStatusServer::TCPClient do
   end
 
   describe "#notify" do
-    let(:client) { mock(:client) }
+    let(:client) { double(:client) }
 
     context "no exceptions" do
       before do
@@ -99,7 +99,7 @@ describe BuildStatusServer::TCPClient do
       end
 
       it "client must close" do
-        client = mock
+        client = double
         TCPSocket.should_receive(:new).and_return(client)
 
         client.should_receive(:print).and_raise(StandardError)

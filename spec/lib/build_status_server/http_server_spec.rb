@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe BuildStatusServer::HTTPServer do
   let(:tcp_server) { { "address" => "address", "port" => "port" }}
-  let(:config) { stub(tcp_server: tcp_server, verbose: false) }
-  let(:store) { stub }
+  let(:config) { double(tcp_server: tcp_server, verbose: false) }
+  let(:store) { double }
 
   subject { described_class.new(config, store, false) }
 
@@ -34,8 +34,8 @@ describe BuildStatusServer::HTTPServer do
 
   describe "#process" do
     it "should start thread and process request" do
-      request = mock
-      server = mock(accept: request)
+      request = double
+      server = double(accept: request)
       subject.should_receive(:server).and_return(server)
       Thread.should_receive(:start).with(request).and_yield(request)
       subject.should_receive(:process_request).with(request)
@@ -45,7 +45,7 @@ describe BuildStatusServer::HTTPServer do
   end
 
   describe "#process_request" do
-    let(:request) { mock }
+    let(:request) { double }
 
     before do
       request.stub(:print)

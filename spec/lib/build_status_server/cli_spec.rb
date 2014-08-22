@@ -3,7 +3,7 @@ require 'spec_helper'
 describe BuildStatusServer::CLI do
   describe ".run" do
     it "should instantiate and call run" do
-      obj = mock
+      obj = double
       described_class.should_receive(:new).and_return(obj)
       obj.should_receive(:setup_and_run)
       described_class.run
@@ -50,7 +50,7 @@ describe BuildStatusServer::CLI do
 
   describe "#run" do
     it "should instantiate a runnner and call listen on it" do
-      runner = mock
+      runner = double
       runner.should_receive(:listen)
       BuildStatusServer::Runner.should_receive(:new).and_return(runner)
 
