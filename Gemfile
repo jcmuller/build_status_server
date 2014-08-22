@@ -9,6 +9,10 @@ group :test do
   gem "simplecov-rcov"
 end
 
+group :development, :test do
+  gem "rake"
+end
+
 group :development do
   gem "rb-fchange", require: false
   gem "rb-fsevent", require: false
