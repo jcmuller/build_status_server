@@ -34,7 +34,7 @@ module BuildStatusServer
     attr_reader :tcp_client, :light, :status
 
     def timed_attempt_to_send_notification
-      timeout(5) do
+      Timeout.timeout(5) do
         answer = send_notification_and_get_answer
         STDOUT.puts answer if config.verbose
       end
