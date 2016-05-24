@@ -1,3 +1,6 @@
+require 'rest-client'
+require 'timeout'
+
 module BuildStatusServer
   class TCPClient
     attr_reader :config
@@ -15,6 +18,8 @@ module BuildStatusServer
     rescue Timeout::Error => ex
       STDERR.puts "Error: #{ex} while trying to send #{light}"
       retry unless attempt > tcp_client["attempts"]
+    rescue RestClient::NotModified
+      STDOUT.puts "Not changing"
     rescue StandardError => ex
       STDERR.puts "There was an error, but we don't know how to handle it: #{ex}"
     end
@@ -45,11 +50,7 @@ module BuildStatusServer
     def send_notification_and_get_answer_impl
       @light = light_for_status
       @attempt = attempt + 1
-      client = TCPSocket.new(tcp_client["host"], tcp_client["port"])
-      client.print "GET #{light} HTTP/1.0\n\n"
-      client.gets(nil)
-    ensure
-      client.close if client
+      RestClient.get("http://#{tcp_client["host"]}:#{tcp_client["port"]}/#{light}")
     end
 
     def connection_error(ex)
