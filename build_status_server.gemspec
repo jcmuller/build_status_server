@@ -37,4 +37,5 @@ Notification Plugin)) and an Arduino powered Traffic Light controller
 
   s.add_dependency("command_line_helper")
   s.add_dependency("json")
+  s.add_dependency("rest-client")
 end
