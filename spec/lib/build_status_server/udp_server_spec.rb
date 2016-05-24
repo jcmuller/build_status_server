@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe BuildStatusServer::UDPServer do
+describe BuildStatusServer::WebServer do
   let(:config) {
     double(
       udp_server: {

@@ -1,5 +1,18 @@
+require 'sinatra/base'
+
 module BuildStatusServer
-  class UDPServer < Server
+  class WebServer < Sinatra::Base
+
+    post "/" do
+      request.body.rewind
+      process
+    end
+
+    get "/" do
+      "Build is #{build_status}"
+    end
+
+    private
 
     def setup
       server_settings = config.udp_server
@@ -14,9 +27,7 @@ module BuildStatusServer
     end
 
     def process
-      data, _ = server.recvfrom(2048)
-
-      if process_job(data)
+      if process_job(request.body.read)
         status = store.passing_builds?
         TCPClient.new(config).notify(status)
       end
@@ -26,25 +37,28 @@ module BuildStatusServer
       job = parse_data(data)
       return false unless job
 
-      if job.class != Hash || job["build"].class != Hash
+      if job.class != Hash
         STDERR.puts "Pinged with an invalid payload"
         return false
       end
 
-      build_name = job["name"]
+      build_name = [
+        job["repository"]["name"],
+        job["branch"],
+      ].join('-')
 
       if !should_process_build(build_name)
         STDOUT.puts "Ignoring #{build_name} (#{config.mask["regex"]}--#{config.mask["policy"]})" if config.verbose
         return false
       end
 
-      phase = job["build"]["phase"]
-      status = job["build"]["status"]
+      phase = job["event"]
+      status = job["status"]
 
-      if phase == "FINISHED"
+      if phase == "stop"
         STDOUT.puts "Got #{status} for #{build_name} on #{Time.now} [#{job_internals(job)}]" if config.verbose
         case status
-        when "SUCCESS", "FAILURE"
+        when "passed", "failed"
           store[build_name] = status
           return true
         end
@@ -66,8 +80,8 @@ Received: #{data}
     end
 
     def job_internals(job)
-      "build=>#{job["build"]["number"]}".tap do |output|
-        output.concat(", status=>#{job["build"]["status"]}") if job["build"]["status"]
+      "build=>#{job["session"]}".tap do |output|
+        output.concat(", status=>#{job["status"]}") if job["status"]
       end
     end
 
@@ -81,5 +95,16 @@ Received: #{data}
       ))
     end
 
+    def build_status
+      store.passing_builds? ? "passing" : "failing"
+    end
+
+    def config
+      @config ||= Config.new
+    end
+
+    def store
+      @store ||= Store.new(config)
+    end
   end
 end

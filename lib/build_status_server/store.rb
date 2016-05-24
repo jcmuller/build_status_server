@@ -30,7 +30,7 @@ module BuildStatusServer
 
     def passing_builds?
       read
-      store.values.select{ |val| val !~ %r{(?:pass|SUCCESS)} }.empty?
+      store.values.select{ |val| val !~ %r{(?:pass|passed|SUCCESS)} }.empty?
     end
 
     private

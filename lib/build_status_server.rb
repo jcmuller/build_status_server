@@ -12,6 +12,6 @@ module BuildStatusServer
   autoload :Server,      'build_status_server/server'
   autoload :Store,       'build_status_server/store'
   autoload :TCPClient,   'build_status_server/tcp_client'
-  autoload :UDPServer,   'build_status_server/udp_server'
+  autoload :WebServer,   'build_status_server/web_server'
   autoload :VERSION,     'build_status_server/version'
 end

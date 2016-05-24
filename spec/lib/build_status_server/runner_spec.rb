@@ -9,7 +9,7 @@ describe BuildStatusServer::Runner do
   before do
     BuildStatusServer::Config.stub(:new).and_return(config)
     BuildStatusServer::Store.stub(:new).and_return(store)
-    BuildStatusServer::UDPServer.stub(:new).and_return(udp_server)
+    BuildStatusServer::WebServer.stub(:new).and_return(udp_server)
     BuildStatusServer::HTTPServer.stub(:new).and_return(http_server)
   end
 

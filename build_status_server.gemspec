@@ -32,10 +32,10 @@ Notification Plugin)) and an Arduino powered Traffic Light controller
   s.add_development_dependency("guard-rspec")
   s.add_development_dependency("pry-byebug")
   s.add_development_dependency("binding_of_caller")
-  s.add_development_dependency("sinatra")
   s.add_development_dependency("terminal-notifier-guard")
 
   s.add_dependency("command_line_helper")
   s.add_dependency("json")
   s.add_dependency("rest-client")
+  s.add_dependency("sinatra")
 end
