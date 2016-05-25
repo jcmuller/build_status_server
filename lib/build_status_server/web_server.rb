@@ -3,6 +3,9 @@ require 'sinatra/base'
 module BuildStatusServer
   class WebServer < Sinatra::Base
 
+    set :bind, '0.0.0.0'
+    set :port, 2222
+
     post "/" do
       request.body.rewind
       process
